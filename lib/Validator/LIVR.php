@@ -23,10 +23,15 @@ class LIVR {
         'like'             => 'Validator\LIVR\Rules\String::like'
     ];
 
+    
+    public static function register_rules($rules) {
+        self::$DEFAULT_RULES = $rules + self::$DEFAULT_RULES;
+    }
+
 
     public function __construct($livr_rules) {
         $this->livr_rules = $livr_rules;
-        $this->register_rules(self::$DEFAULT_RULES);
+        $this->validator_builders = self::$DEFAULT_RULES; 
     }
 
 
@@ -135,11 +140,6 @@ class LIVR {
         }
 
         return call_user_func_array($this->validator_builders[$name], $args);
-    }
-
-
-    public function register_rules($rules) {
-        $this->validator_builders = $rules + $this->validator_builders;
     }
 
 
