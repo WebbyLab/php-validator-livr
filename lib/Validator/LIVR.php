@@ -1,7 +1,6 @@
 <?php
 namespace Validator;
 
-
 class LIVR {
     private $is_prepared = false;
     private $livr_rules = [];
@@ -13,8 +12,6 @@ class LIVR {
         'required'         => 'Validator\LIVR\Rules\Common::required',
         'not_empty'        => 'Validator\LIVR\Rules\Common::not_empty',
         
-        'max_length'       => 'Validator\LIVR\Rules\String::max_length',
-
         'one_of'           => 'Validator\LIVR\Rules\String::one_of',
         'min_length'       => 'Validator\LIVR\Rules\String::min_length',
         'max_length'       => 'Validator\LIVR\Rules\String::max_length',
