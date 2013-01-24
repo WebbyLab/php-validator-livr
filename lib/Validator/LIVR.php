@@ -37,7 +37,7 @@ class LIVR {
 
         $validators = [];
         foreach ( $this->livr_rules as $field => $field_rules ) {
-            if ( $this->isAssoc($field_rules) ) {
+            if ( $this->is_assoc_array($field_rules) ) {
                 $field_rules = [$field_rules];
             }
 
@@ -59,7 +59,7 @@ class LIVR {
             $this->prepare();
         }
 
-        if ( ! $this->isAssoc($data) ) {
+        if ( ! $this->is_assoc_array($data) ) {
             $this->errors = 'FORMAT_ERROR';
             return;
         }
@@ -78,9 +78,8 @@ class LIVR {
             $field_result;
 
             foreach ($validators as $v_cb) {
-                unset($field_result);
-                //$err_code = $v_cb($value, $data, \$field_result);
-                $err_code = $v_cb( $value, $data );
+                $field_result = NULL;
+                $err_code = $v_cb( $value, $data, $field_result );
 
                 if ( $err_code ) {
                     $errors[$field_name] = $err_code;
@@ -112,7 +111,7 @@ class LIVR {
 
 
     private function parse_rule($livr_rule) {
-        if ( $this->isAssoc($livr_rule) ) {
+        if ( $this->is_assoc_array($livr_rule) ) {
             reset($livr_rule);
             $name = key($livr_rule);
 
@@ -144,7 +143,7 @@ class LIVR {
     }
 
 
-    private function isAssoc($arr) {
+    private function is_assoc_array($arr) {
         if ( ! is_array($arr) ) {
             return false;
         }
