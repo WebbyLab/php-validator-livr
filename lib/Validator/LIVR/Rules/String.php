@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Validator\LIVR\Rules;
 
@@ -26,10 +26,10 @@ class String {
                 return;
             }
 
-            if ( strlen($value) > $max_length ) {
+            if ( mb_strlen($value, "UTF-8") > $max_length ) {
                 return 'TOO_LONG';
-            } 
-            
+            }
+
             return;
         };
     }
@@ -42,10 +42,10 @@ class String {
                 return;
             }
 
-            if ( strlen($value) < $min_length ) {
+            if ( mb_strlen($value, "UTF-8") < $min_length ) {
                 return 'TOO_SHORT';
-            } 
-            
+            }
+
             return;
         };
     }
@@ -58,14 +58,14 @@ class String {
                 return;
             }
 
-            if ( strlen($value) < $length ) {
+            if ( mb_strlen($value, "UTF-8") < $length ) {
                 return 'TOO_SHORT';
-            } 
+            }
 
-            if ( strlen($value) > $length ) {
+            if ( mb_strlen($value, "UTF-8") > $length ) {
                 return 'TOO_LONG';
-            } 
-            
+            }
+
             return;
         };
     }
@@ -78,26 +78,27 @@ class String {
                 return;
             }
 
-            if ( strlen($value) < $min_length ) {
+            if ( mb_strlen($value, "UTF-8") < $min_length ) {
                 return 'TOO_SHORT';
-            } 
+            }
 
-            if ( strlen($value) > $max_length ) {
+            if ( mb_strlen($value, "UTF-8") > $max_length ) {
                 return 'TOO_LONG';
-            } 
-            
+            }
+
             return;
         };
     }
 
 
     public static function like($re) {
+        $re = '/' . $re . '/';
 
         return function($value) use($re) {
             if ( !isset($value) or $value == '' ) {
                 return;
             }
-        
+
             if (! preg_match($re, $value) ) {
                 return 'WRONG_FORMAT';
             }

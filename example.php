@@ -3,13 +3,13 @@
 require 'vendor/autoload.php';
 
 
-$livr = [ 
+$livr = [
     'name' => [ [ 'max_length' => 10 ] ]
 ];
 
 $validator = new Validator\LIVR($livr);
 $validator->prepare();
 
-$rules = $validator->validate( ["name" => "1234567890"] );
+$rules = $validator->validate( ["name" => "проверкааа"] );
 
 var_dump($rules);
