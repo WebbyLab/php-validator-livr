@@ -9,26 +9,30 @@ class LIVR {
     private $errors;
 
     private static $DEFAULT_RULES = [
-        'required'         => 'Validator\LIVR\Rules\Common::required',
-        'not_empty'        => 'Validator\LIVR\Rules\Common::not_empty',
+        'required'       => 'Validator\LIVR\Rules\Common::required',
+        'not_empty'      => 'Validator\LIVR\Rules\Common::not_empty',
         
-        'one_of'           => 'Validator\LIVR\Rules\String::one_of',
-        'min_length'       => 'Validator\LIVR\Rules\String::min_length',
-        'max_length'       => 'Validator\LIVR\Rules\String::max_length',
-        'length_equal'     => 'Validator\LIVR\Rules\String::length_equal',
-        'length_between'   => 'Validator\LIVR\Rules\String::length_between',
-        'like'             => 'Validator\LIVR\Rules\String::like'
+        'one_of'         => 'Validator\LIVR\Rules\String::one_of',
+        'min_length'     => 'Validator\LIVR\Rules\String::min_length',
+        'max_length'     => 'Validator\LIVR\Rules\String::max_length',
+        'length_equal'   => 'Validator\LIVR\Rules\String::length_equal',
+        'length_between' => 'Validator\LIVR\Rules\String::length_between',
+        'like'           => 'Validator\LIVR\Rules\String::like'
     ];
 
     
-    public static function register_rules($rules) {
+    public static function register_default_rules($rules) {
         self::$DEFAULT_RULES = $rules + self::$DEFAULT_RULES;
+        return self;
     }
 
+    public static function get_default_rules() {
+        return self::$DEFAULT_RULES;
+    }
 
     public function __construct($livr_rules) {
         $this->livr_rules = $livr_rules;
-        $this->validator_builders = self::$DEFAULT_RULES; 
+        $this->register_rules(self::$DEFAULT_RULES); 
     }
 
 
@@ -111,6 +115,14 @@ class LIVR {
         return $this->errors;
     }
 
+    public function register_rules($rules) {
+        $this->validator_builders += $rules;
+        return $this;
+    }
+
+    public function get_rules() {
+        return $this->validator_builders;
+    }
 
     private function parse_rule($livr_rule) {
         if ( $this->is_assoc_array($livr_rule) ) {
@@ -136,7 +148,10 @@ class LIVR {
             throw new \Exception( "Rule [$name] not registered" );
         }
 
-        return call_user_func_array($this->validator_builders[$name], $args);
+        $func_args = $args;
+        array_push($func_args, $this->validator_builders);
+
+        return call_user_func_array($this->validator_builders[$name], $func_args);
     }
 
 
