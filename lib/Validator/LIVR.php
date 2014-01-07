@@ -22,8 +22,8 @@ class LIVR {
 
     
     public static function registerDefaultRules($rules) {
-        self::$DEFAULT_RULES = $rules + self::$DEFAULT_RULES;
-        return self;
+        self::$DEFAULT_RULES = self::$DEFAULT_RULES + $rules;
+        return;
     }
 
     public static function getDefaultRules() {
@@ -41,13 +41,13 @@ class LIVR {
             return;
         }
 
-        $validators = [];
-        foreach ( $this->livrRules as $field => $field_rules ) {
-            if ( $this->isAssocArray($field_rules) ) {
-                $field_rules = [$field_rules];
+        foreach ( $this->livrRules as $field => $fieldRules ) {
+            if ( $this->isAssocArray($fieldRules) ) {
+                $fieldRules = [$fieldRules];
             }
 
-            foreach ($field_rules as $rule) {
+            $validators = [];
+            foreach ($fieldRules as $rule) {
                 list($name, $args) = $this->parseRule($rule);
 
                 array_push($validators, $this->buildValidator($name, $args));
@@ -61,7 +61,7 @@ class LIVR {
 
 
     public function validate($data) {
-        if ( $this->isPrepared ) {
+        if ( ! $this->isPrepared ) {
             $this->prepare();
         }
 
@@ -74,32 +74,35 @@ class LIVR {
         $result = [];
 
         foreach ( $this->validators as $fieldName => $validators ) {
-            if ( count($this->validators) == 0 ) {
+            if ( count($validators) == 0 ) {
                 continue;
-            }
+            }            
 
             $value = $data[$fieldName];
 
             $isOk = true;
-            $field_result;
+            $fieldResult;
 
-            foreach ($validators as $v_cb) {
-                $field_result = NULL;
-                $errCode = $v_cb( $value, $data, $field_result );
+            foreach ($validators as $vCb) {
+                $fieldResult = NULL;
+
+                $errCode = $vCb( 
+                    ( array_key_exists($fieldName, $result) ? $result[$fieldName] : $value ), 
+                    $data, 
+                    $fieldResult 
+                );
 
                 if ( $errCode ) {
                     $errors[$fieldName] = $errCode;
                     $isOk = false;
                     
                     break;
+                } elseif ( $isOk && array_key_exists($fieldName, $data) ) {
+                    $result[$fieldName] = isset($fieldResult) ? $fieldResult  : $value;
                 }
             }
 
-            if ( $isOk && array_key_exists($fieldName, $data) ) {
-                $result[$fieldName] = isset($field_result) ? $field_result  : $value;
-            }
         }
-
 
         if ( count($errors) > 0 ) {
             $this->errors = $errors;
