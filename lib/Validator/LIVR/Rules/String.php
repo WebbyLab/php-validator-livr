@@ -3,14 +3,14 @@
 namespace Validator\LIVR\Rules;
 
 class String {
-    public static function one_of($allowed_values) {
+    public static function one_of($allowedValues) {
 
-        return function($value) use($allowed_values) {
+        return function($value) use($allowedValues) {
             if ( !isset($value) or $value == '' ) {
                 return;
             }
 
-            if ( ! in_array($value, $allowed_values) ) {
+            if ( ! in_array($value, $allowedValues) ) {
                 return 'NOT_ALLOWED_VALUE';
             }
 
@@ -19,14 +19,14 @@ class String {
     }
 
 
-    public static function max_length($max_length) {
+    public static function max_length($maxLength) {
 
-        return function($value) use($max_length) {
+        return function($value) use($maxLength) {
             if ( !isset($value) or $value == '' ) {
                 return;
             }
 
-            if ( mb_strlen($value, "UTF-8") > $max_length ) {
+            if ( mb_strlen($value, "UTF-8") > $maxLength ) {
                 return 'TOO_LONG';
             }
 
@@ -35,14 +35,14 @@ class String {
     }
 
 
-    public static function min_length($min_length) {
+    public static function min_length($minLength) {
 
-        return function($value) use($min_length) {
+        return function($value) use($minLength) {
             if ( !isset($value) or $value == '' ) {
                 return;
             }
 
-            if ( mb_strlen($value, "UTF-8") < $min_length ) {
+            if ( mb_strlen($value, "UTF-8") < $minLength ) {
                 return 'TOO_SHORT';
             }
 
@@ -71,18 +71,18 @@ class String {
     }
 
 
-     public static function length_between($min_length, $max_length) {
+     public static function length_between($minLength, $maxLength) {
 
-        return function($value) use($min_length, $max_length) {
+        return function($value) use($minLength, $maxLength) {
             if ( !isset($value) or $value == '' ) {
                 return;
             }
 
-            if ( mb_strlen($value, "UTF-8") < $min_length ) {
+            if ( mb_strlen($value, "UTF-8") < $minLength ) {
                 return 'TOO_SHORT';
             }
 
-            if ( mb_strlen($value, "UTF-8") > $max_length ) {
+            if ( mb_strlen($value, "UTF-8") > $maxLength ) {
                 return 'TOO_LONG';
             }
 

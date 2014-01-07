@@ -2,10 +2,10 @@
 namespace Validator;
 
 class LIVR {
-    private $is_prepared = false;
-    private $livr_rules = [];
+    private $isPrepared = false;
+    private $livrRules  = [];
     private $validators = [];
-    private $validator_builders = [];
+    private $validatorBuilders = [];
     private $errors;
 
     private static $DEFAULT_RULES = [
@@ -21,51 +21,51 @@ class LIVR {
     ];
 
     
-    public static function register_default_rules($rules) {
+    public static function registerDefaultRules($rules) {
         self::$DEFAULT_RULES = $rules + self::$DEFAULT_RULES;
         return self;
     }
 
-    public static function get_default_rules() {
+    public static function getDefaultRules() {
         return self::$DEFAULT_RULES;
     }
 
-    public function __construct($livr_rules) {
-        $this->livr_rules = $livr_rules;
-        $this->register_rules(self::$DEFAULT_RULES); 
+    public function __construct($livrRules) {
+        $this->livrRules = $livrRules;
+        $this->registerRules(self::$DEFAULT_RULES); 
     }
 
 
     public function prepare() {
-        if ( $this->is_prepared ) {
+        if ( $this->isPrepared ) {
             return;
         }
 
         $validators = [];
-        foreach ( $this->livr_rules as $field => $field_rules ) {
-            if ( $this->is_assoc_array($field_rules) ) {
+        foreach ( $this->livrRules as $field => $field_rules ) {
+            if ( $this->isAssocArray($field_rules) ) {
                 $field_rules = [$field_rules];
             }
 
             foreach ($field_rules as $rule) {
-                list($name, $args) = $this->parse_rule($rule);
+                list($name, $args) = $this->parseRule($rule);
 
-                array_push($validators, $this->build_validator($name, $args));
+                array_push($validators, $this->buildValidator($name, $args));
             }
 
             $this->validators[$field] = $validators;
         }
             
-        $this->is_prepared = true;
+        $this->isPrepared = true;
     }
 
 
     public function validate($data) {
-        if ( $this->is_prepared ) {
+        if ( $this->isPrepared ) {
             $this->prepare();
         }
 
-        if ( ! $this->is_assoc_array($data) ) {
+        if ( ! $this->isAssocArray($data) ) {
             $this->errors = 'FORMAT_ERROR';
             return;
         }
@@ -73,30 +73,30 @@ class LIVR {
         $errors = [];
         $result = [];
 
-        foreach ( $this->validators as $field_name => $validators ) {
+        foreach ( $this->validators as $fieldName => $validators ) {
             if ( count($this->validators) == 0 ) {
                 continue;
             }
 
-            $value = $data[$field_name];
+            $value = $data[$fieldName];
 
-            $is_ok = true;
+            $isOk = true;
             $field_result;
 
             foreach ($validators as $v_cb) {
                 $field_result = NULL;
-                $err_code = $v_cb( $value, $data, $field_result );
+                $errCode = $v_cb( $value, $data, $field_result );
 
-                if ( $err_code ) {
-                    $errors[$field_name] = $err_code;
-                    $is_ok = false;
+                if ( $errCode ) {
+                    $errors[$fieldName] = $errCode;
+                    $isOk = false;
                     
                     break;
                 }
             }
 
-            if ( $is_ok && array_key_exists($field_name, $data) ) {
-                $result[$field_name] = isset($field_result) ? $field_result  : $value;
+            if ( $isOk && array_key_exists($fieldName, $data) ) {
+                $result[$fieldName] = isset($field_result) ? $field_result  : $value;
             }
         }
 
@@ -111,31 +111,31 @@ class LIVR {
     }
 
 
-    public function get_errors() {
+    public function getErrors() {
         return $this->errors;
     }
 
-    public function register_rules($rules) {
-        $this->validator_builders += $rules;
+    public function registerRules($rules) {
+        $this->validatorBuilders += $rules;
         return $this;
     }
 
-    public function get_rules() {
-        return $this->validator_builders;
+    public function getRules() {
+        return $this->validatorBuilders;
     }
 
-    private function parse_rule($livr_rule) {
-        if ( $this->is_assoc_array($livr_rule) ) {
-            reset($livr_rule);
-            $name = key($livr_rule);
+    private function parseRule($livrRule) {
+        if ( $this->isAssocArray($livrRule) ) {
+            reset($livrRule);
+            $name = key($livrRule);
 
-            $args = $livr_rule[$name];
+            $args = $livrRule[$name];
 
             if ( !is_array($args) ) {
                 $args = [$args];
             }
         } else {
-             $name = $livr_rule;
+             $name = $livrRule;
              $args = [];
         }
 
@@ -143,19 +143,19 @@ class LIVR {
     }
 
 
-    private function build_validator($name, $args) {
-        if ( !array_key_exists($name, $this->validator_builders) ) {
+    private function buildValidator($name, $args) {
+        if ( !array_key_exists($name, $this->validatorBuilders) ) {
             throw new \Exception( "Rule [$name] not registered" );
         }
 
-        $func_args = $args;
-        array_push($func_args, $this->validator_builders);
+        $funcArgs = $args;
+        array_push($funcArgs, $this->validatorBuilders);
 
-        return call_user_func_array($this->validator_builders[$name], $func_args);
+        return call_user_func_array($this->validatorBuilders[$name], $funcArgs);
     }
 
 
-    private function is_assoc_array($arr) {
+    private function isAssocArray($arr) {
         if ( ! is_array($arr) ) {
             return false;
         }
