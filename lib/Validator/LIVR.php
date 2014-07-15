@@ -17,7 +17,16 @@ class LIVR {
         'max_length'     => 'Validator\LIVR\Rules\String::max_length',
         'length_equal'   => 'Validator\LIVR\Rules\String::length_equal',
         'length_between' => 'Validator\LIVR\Rules\String::length_between',
-        'like'           => 'Validator\LIVR\Rules\String::like'
+        'like'           => 'Validator\LIVR\Rules\String::like',
+
+        'integer'           => 'Validator\LIVR\Rules\Numeric::integer',
+        'positive_integer'  => 'Validator\LIVR\Rules\Numeric::positive_integer',
+        'decimal'           => 'Validator\LIVR\Rules\Numeric::decimal',
+        'positive_decimal'  => 'Validator\LIVR\Rules\Numeric::positive_decimal',
+        'min_number'        => 'Validator\LIVR\Rules\Numeric::min_number',
+        'max_number'        => 'Validator\LIVR\Rules\Numeric::max_number',
+        'number_between'    => 'Validator\LIVR\Rules\Numeric::number_between',
+
     ];
 
 

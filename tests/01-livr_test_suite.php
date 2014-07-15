@@ -4,7 +4,12 @@ require 'vendor/autoload.php';
 
 class TestSuite extends PHPUnit_Framework_TestCase {
 
-    private function verifyPositiveValidation($data) {
+    /**
+     * @dataProvider positiveTestsProvider
+     */
+    public function testPositive($data, $test) {
+        print "Positive test [$test] is run\n";
+
         $validator  = new Validator\LIVR( $data['rules'] );
 
         $output     = $validator->validate( $data['input'] );
@@ -13,7 +18,12 @@ class TestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals( $output, $data['output'], 'Validator should return validated data' );
     }
 
-    private function verifyNegativeValidation($data) {
+    /**
+     * @dataProvider negativeTestsProvider
+     */
+    public function testNegative($data, $test) {
+        print "Negative test [$test] is run\n";
+
         $validator  = new Validator\LIVR( $data['rules'] );
         $output     = $validator->validate( $data['input'] );
 
@@ -22,8 +32,10 @@ class TestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals( $validator->getErrors(), $data['errors'], 'Validator should contain valid errors' );
     }
 
-    public function testPositiveSuite() {
+    public function positiveTestsProvider() {
         $dir = __DIR__ . '/test_suite/positive';
+
+        $pull = array();
 
         if ( $handle = opendir( $dir ) ) {
 
@@ -36,14 +48,40 @@ class TestSuite extends PHPUnit_Framework_TestCase {
                         'output'    => json_decode(file_get_contents("$dir/$entry/output.json"), true),
                     );
 
-                    $this->verifyPositiveValidation($data);
-
-                    echo "$entry - OK\n";
+                    array_push($pull, [$data, $entry]);
                 }
             }
 
             closedir($handle);
         }
+
+        return $pull;
+    }
+
+    public function negativeTestsProvider() {
+        $dir = __DIR__ . '/test_suite/negative';
+
+        $pull = array();
+
+        if ( $handle = opendir( $dir ) ) {
+
+            while ( false !== ( $entry = readdir($handle) ) ) {
+                if ( $entry != "." && $entry != ".." ) {
+
+                    $data = array(
+                        'input'     => json_decode(file_get_contents("$dir/$entry/input.json"),  true),
+                        'rules'     => json_decode(file_get_contents("$dir/$entry/rules.json"),  true),
+                        'errors'    => json_decode(file_get_contents("$dir/$entry/errors.json"), true),
+                    );
+
+                    array_push($pull, [$data, $entry]);
+                }
+            }
+
+            closedir($handle);
+        }
+
+        return $pull;
     }
 }
 
