@@ -6,21 +6,30 @@ class LIVR {
     private $livrRules  = [];
     private $validators = [];
     private $validatorBuilders = [];
-    private $errors;
+    private $errors     = false;
 
     private static $DEFAULT_RULES = [
         'required'       => 'Validator\LIVR\Rules\Common::required',
         'not_empty'      => 'Validator\LIVR\Rules\Common::not_empty',
-        
+
         'one_of'         => 'Validator\LIVR\Rules\String::one_of',
         'min_length'     => 'Validator\LIVR\Rules\String::min_length',
         'max_length'     => 'Validator\LIVR\Rules\String::max_length',
         'length_equal'   => 'Validator\LIVR\Rules\String::length_equal',
         'length_between' => 'Validator\LIVR\Rules\String::length_between',
-        'like'           => 'Validator\LIVR\Rules\String::like'
+        'like'           => 'Validator\LIVR\Rules\String::like',
+
+        'integer'           => 'Validator\LIVR\Rules\Numeric::integer',
+        'positive_integer'  => 'Validator\LIVR\Rules\Numeric::positive_integer',
+        'decimal'           => 'Validator\LIVR\Rules\Numeric::decimal',
+        'positive_decimal'  => 'Validator\LIVR\Rules\Numeric::positive_decimal',
+        'min_number'        => 'Validator\LIVR\Rules\Numeric::min_number',
+        'max_number'        => 'Validator\LIVR\Rules\Numeric::max_number',
+        'number_between'    => 'Validator\LIVR\Rules\Numeric::number_between',
+
     ];
 
-    
+
     public static function registerDefaultRules($rules) {
         self::$DEFAULT_RULES = self::$DEFAULT_RULES + $rules;
         return;
@@ -32,7 +41,7 @@ class LIVR {
 
     public function __construct($livrRules) {
         $this->livrRules = $livrRules;
-        $this->registerRules(self::$DEFAULT_RULES); 
+        $this->registerRules(self::$DEFAULT_RULES);
     }
 
 
@@ -42,11 +51,12 @@ class LIVR {
         }
 
         foreach ( $this->livrRules as $field => $fieldRules ) {
-            if ( $this->isAssocArray($fieldRules) ) {
+            if ( !is_array($fieldRules) || $this->isAssocArray($fieldRules) ) {
                 $fieldRules = [$fieldRules];
             }
 
             $validators = [];
+
             foreach ($fieldRules as $rule) {
                 list($name, $args) = $this->parseRule($rule);
 
@@ -55,7 +65,7 @@ class LIVR {
 
             $this->validators[$field] = $validators;
         }
-            
+
         $this->isPrepared = true;
     }
 
@@ -76,9 +86,9 @@ class LIVR {
         foreach ( $this->validators as $fieldName => $validators ) {
             if ( count($validators) == 0 ) {
                 continue;
-            }            
+            }
 
-            $value = $data[$fieldName];
+            $value = isset($data[$fieldName]) ? $data[$fieldName] : null;
 
             $isOk = true;
             $fieldResult;
@@ -86,16 +96,16 @@ class LIVR {
             foreach ($validators as $vCb) {
                 $fieldResult = NULL;
 
-                $errCode = $vCb( 
-                    ( array_key_exists($fieldName, $result) ? $result[$fieldName] : $value ), 
-                    $data, 
-                    $fieldResult 
+                $errCode = $vCb(
+                    ( array_key_exists($fieldName, $result) ? $result[$fieldName] : $value ),
+                    $data,
+                    $fieldResult
                 );
 
                 if ( $errCode ) {
                     $errors[$fieldName] = $errCode;
                     $isOk = false;
-                    
+
                     break;
                 } elseif ( $isOk && array_key_exists($fieldName, $data) ) {
                     $result[$fieldName] = isset($fieldResult) ? $fieldResult  : $value;
@@ -108,7 +118,7 @@ class LIVR {
             $this->errors = $errors;
             return false;
         } else {
-            unset($this->errors);
+            $this->errors = false;
             return $result;
         }
     }
@@ -165,4 +175,4 @@ class LIVR {
 
         return array_keys($arr) !== range(0, count($arr) - 1);
     }
-}   
+}
