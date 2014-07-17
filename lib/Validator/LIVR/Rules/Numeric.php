@@ -7,7 +7,7 @@ class Numeric {
     public static function integer() {
 
         return function($value) {
-            if ( !isset($value) or $value == '' ) {
+            if ( !isset($value) or $value === '' ) {
                 return;
             }
 
@@ -22,7 +22,7 @@ class Numeric {
     public static function positive_integer() {
 
         return function($value) {
-            if ( !isset($value) or $value == '' ) {
+            if ( !isset($value) or $value === '' ) {
                 return;
             }
 
@@ -37,7 +37,7 @@ class Numeric {
     public static function decimal() {
 
         return function($value) {
-            if ( !isset($value) or $value == '' ) {
+            if ( !isset($value) or $value === '' ) {
                 return;
             }
 
@@ -52,7 +52,7 @@ class Numeric {
     public static function positive_decimal() {
 
         return function($value) {
-            if ( !isset($value) or $value == '' ) {
+            if ( !isset($value) or $value === '' ) {
                 return;
             }
 
@@ -67,7 +67,7 @@ class Numeric {
     public static function max_number($maxNumer) {
 
         return function($value) use ($maxNumer) {
-            if ( !isset($value) or $value == '' ) {
+            if ( !isset($value) or $value === '' ) {
                 return;
             }
 
@@ -81,7 +81,7 @@ class Numeric {
     public static function min_number($minNumer) {
 
         return function($value) use ($minNumer) {
-            if ( !isset($value) or $value == '' ) {
+            if ( !isset($value) or $value === '' ) {
                 return;
             }
 
@@ -95,7 +95,7 @@ class Numeric {
     public static function number_between($minNumer, $maxNumer) {
 
         return function($value) use ($minNumer, $maxNumer) {
-            if ( !isset($value) or $value == '' ) {
+            if ( !isset($value) or $value === '' ) {
                 return;
             };
 
