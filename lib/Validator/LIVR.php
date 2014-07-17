@@ -1,4 +1,5 @@
 <?php
+
 namespace Validator;
 
 class LIVR {
@@ -11,6 +12,7 @@ class LIVR {
     private static $DEFAULT_RULES = [
         'required'       => 'Validator\LIVR\Rules\Common::required',
         'not_empty'      => 'Validator\LIVR\Rules\Common::not_empty',
+        'not_empty_list'      => 'Validator\LIVR\Rules\Common::not_empty_list',
 
         'one_of'         => 'Validator\LIVR\Rules\String::one_of',
         'min_length'     => 'Validator\LIVR\Rules\String::min_length',
@@ -26,6 +28,16 @@ class LIVR {
         'min_number'        => 'Validator\LIVR\Rules\Numeric::min_number',
         'max_number'        => 'Validator\LIVR\Rules\Numeric::max_number',
         'number_between'    => 'Validator\LIVR\Rules\Numeric::number_between',
+
+        'email'             => 'Validator\LIVR\Rules\Special::email',
+        'equal_to_field'    => 'Validator\LIVR\Rules\Special::equal_to_field',
+        'trim'              => 'Validator\LIVR\Rules\Filters::trim',
+        'to_lc'             => 'Validator\LIVR\Rules\Filters::to_lc',
+        'to_uc'             => 'Validator\LIVR\Rules\Filters::to_uc',
+        'nested_object'     => 'Validator\LIVR\Rules\Helper::nested_object',
+        'list_of'           => 'Validator\LIVR\Rules\Helper::list_of',
+        'list_of_objects'   => 'Validator\LIVR\Rules\Helper::list_of_objects',
+        'list_of_different_objects'  => 'Validator\LIVR\Rules\Helper::list_of_different_objects',
 
     ];
 
@@ -51,7 +63,7 @@ class LIVR {
         }
 
         foreach ( $this->livrRules as $field => $fieldRules ) {
-            if ( !is_array($fieldRules) || $this->isAssocArray($fieldRules) ) {
+            if ( !is_array($fieldRules) || \Validator\LIVR\Util::isAssocArray($fieldRules) ) {
                 $fieldRules = [$fieldRules];
             }
 
@@ -75,7 +87,7 @@ class LIVR {
             $this->prepare();
         }
 
-        if ( ! $this->isAssocArray($data) ) {
+        if ( ! \Validator\LIVR\Util::isAssocArray($data) ) {
             $this->errors = 'FORMAT_ERROR';
             return;
         }
@@ -84,6 +96,7 @@ class LIVR {
         $result = [];
 
         foreach ( $this->validators as $fieldName => $validators ) {
+
             if ( count($validators) == 0 ) {
                 continue;
             }
@@ -108,7 +121,7 @@ class LIVR {
 
                     break;
                 } elseif ( $isOk && array_key_exists($fieldName, $data) ) {
-                    $result[$fieldName] = isset($fieldResult) ? $fieldResult  : $value;
+                    $result[$fieldName] = (isset($fieldResult) && $fieldResult) ? $fieldResult : $value;
                 }
             }
 
@@ -129,7 +142,9 @@ class LIVR {
     }
 
     public function registerRules($rules) {
-        $this->validatorBuilders += $rules;
+
+        $this->validatorBuilders = array_merge($this->validatorBuilders, $rules);
+
         return $this;
     }
 
@@ -138,13 +153,13 @@ class LIVR {
     }
 
     private function parseRule($livrRule) {
-        if ( $this->isAssocArray($livrRule) ) {
+        if ( \Validator\LIVR\Util::isAssocArray($livrRule) ) {
             reset($livrRule);
             $name = key($livrRule);
 
             $args = $livrRule[$name];
 
-            if ( !is_array($args) ) {
+            if ( !is_array($args) || \Validator\LIVR\Util::isAssocArray($args) ) {
                 $args = [$args];
             }
         } else {
@@ -165,14 +180,5 @@ class LIVR {
         array_push($funcArgs, $this->validatorBuilders);
 
         return call_user_func_array($this->validatorBuilders[$name], $funcArgs);
-    }
-
-
-    private function isAssocArray($arr) {
-        if ( ! is_array($arr) ) {
-            return false;
-        }
-
-        return array_keys($arr) !== range(0, count($arr) - 1);
     }
 }

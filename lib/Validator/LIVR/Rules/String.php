@@ -3,10 +3,11 @@
 namespace Validator\LIVR\Rules;
 
 class String {
+
     public static function one_of($allowedValues) {
 
         return function($value) use($allowedValues) {
-            if ( !isset($value) or $value == '' ) {
+            if ( !isset($value) or $value === '' ) {
                 return;
             }
 
@@ -22,7 +23,7 @@ class String {
     public static function max_length($maxLength) {
 
         return function($value) use($maxLength) {
-            if ( !isset($value) or $value == '' ) {
+            if ( !isset($value) or $value === '' ) {
                 return;
             }
 
@@ -38,7 +39,7 @@ class String {
     public static function min_length($minLength) {
 
         return function($value) use($minLength) {
-            if ( !isset($value) or $value == '' ) {
+            if ( !isset($value) or $value === '' ) {
                 return;
             }
 
@@ -54,7 +55,7 @@ class String {
     public static function length_equal($length) {
 
         return function($value) use($length) {
-            if ( !isset($value) or $value == '' ) {
+            if ( !isset($value) or $value === '' ) {
                 return;
             }
 
@@ -70,11 +71,10 @@ class String {
         };
     }
 
-
-     public static function length_between($minLength, $maxLength) {
+    public static function length_between($minLength, $maxLength) {
 
         return function($value) use($minLength, $maxLength) {
-            if ( !isset($value) or $value == '' ) {
+            if ( !isset($value) or $value === '' ) {
                 return;
             }
 
@@ -95,7 +95,7 @@ class String {
         $re = '/' . $re . '/';
 
         return function($value) use($re) {
-            if ( !isset($value) or $value == '' ) {
+            if ( !isset($value) or $value === '' ) {
                 return;
             }
 
