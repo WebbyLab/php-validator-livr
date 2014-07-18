@@ -8,7 +8,9 @@ class LIVR {
     private $validators = [];
     private $validatorBuilders = [];
     private $errors     = false;
+    private $isAutoTrim = false;
 
+    private static $IS_DEFAULT_AUTO_TRIM = 0;
     private static $DEFAULT_RULES = [
         'required'       => 'Validator\LIVR\Rules\Common::required',
         'not_empty'      => 'Validator\LIVR\Rules\Common::not_empty',
@@ -51,11 +53,20 @@ class LIVR {
         return self::$DEFAULT_RULES;
     }
 
-    public function __construct($livrRules) {
+    public static function defaultAutoTrim($isAutoTrim) {
+        self::$IS_DEFAULT_AUTO_TRIM = !!$isAutoTrim;
+    }
+
+    public function __construct($livrRules,$isAutoTrim = false) {
+        if( $isAutoTrim ) {
+            $this->isAutoTrim = $isAutoTrim;
+        } else {
+            $this->isAutoTrim = self::$IS_DEFAULT_AUTO_TRIM;
+        }
+
         $this->livrRules = $livrRules;
         $this->registerRules(self::$DEFAULT_RULES);
     }
-
 
     public function prepare() {
         if ( $this->isPrepared ) {
@@ -90,6 +101,10 @@ class LIVR {
         if ( ! \Validator\LIVR\Util::isAssocArray($data) ) {
             $this->errors = 'FORMAT_ERROR';
             return;
+        }
+
+        if( $this->isAutoTrim ) {
+            $data = $this->autoTrim($data);
         }
 
         $errors = [];
@@ -180,5 +195,20 @@ class LIVR {
         array_push($funcArgs, $this->validatorBuilders);
 
         return call_user_func_array($this->validatorBuilders[$name], $funcArgs);
+    }
+
+    private function autoTrim($data) {
+        if( is_string($data) ) {
+            return trim($data);
+
+        } elseif ( \Validator\LIVR\Util::isAssocArray($data) ) {
+            $trimmedData = array();
+            foreach($data as $key => $value) {
+                $trimmedData[$key]  = $this->autoTrim($value);
+            }
+
+            return $trimmedData;
+        }
+        return $data;
     }
 }
