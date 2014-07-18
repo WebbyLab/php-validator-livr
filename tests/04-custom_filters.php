@@ -53,7 +53,7 @@ class CustomFiltersTest extends PHPUnit_Framework_TestCase {
             'word1' => 'Wordone',
             'word2' => 'wordtwo',
             'word3' => 'WordThree '
-            ]);
+        ]);
 
     }
 

@@ -60,7 +60,7 @@ class AutoTrimTest extends PHPUnit_Framework_TestCase {
         $validator = new Validator\LIVR( $this->rules, true );
         $output = $validator->validate( $input );
 
-        if($output) {
+        if ($output) {
             throw new \Exception('Should contain error codes');
         }
 
