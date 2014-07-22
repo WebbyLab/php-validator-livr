@@ -1,5 +1,5 @@
 {
-    "name": "webbylab/validator-livr",
+    "name": "validator/livr",
     "type": "library",
     "description": "Lightweight PHP validator supporting Language Independent Validation Rules Specification (LIVR) ",
     "keywords": ["validator", "livr"],
