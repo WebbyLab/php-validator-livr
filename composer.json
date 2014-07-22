@@ -1,15 +1,26 @@
 {
-    "name": "koorchik/validator-livr",
+    "name": "webbylab/validator-livr",
     "type": "library",
     "description": "Lightweight PHP validator supporting Language Independent Validation Rules Specification (LIVR) ",
-    "keywords": ["validator"],
+    "keywords": ["validator", "livr"],
     "homepage": "https://github.com/koorchik/php-validator-livr",
     "license": "MIT",
     "authors": [
         {
             "name": "Viktor Turskyi",
             "email": "koorchik@gmail.com",
-            "homepage": "http://koorchik.blogspot.com/"
+            "homepage": "http://koorchik.blogspot.com/",
+            "role": "Author"
+        },
+        {
+            "name": "Anton Morozov",
+            "email": "anton@webbylab.com",
+            "homepage": "http://webbylab.com/",
+            "role": "Developer"
+        },
+        {
+            "name": "Konstantin Dvornik",
+            "role": "Developer"
         }
     ],
     "require": {
