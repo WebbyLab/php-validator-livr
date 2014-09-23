@@ -122,7 +122,7 @@ class LIVR {
             $fieldResult;
 
             foreach ($validators as $vCb) {
-                $fieldResult = NULL;
+                $fieldResult = array_key_exists($fieldName, $result) ? $result[$fieldName] : $value;
 
                 $errCode = $vCb(
                     ( array_key_exists($fieldName, $result) ? $result[$fieldName] : $value ),
