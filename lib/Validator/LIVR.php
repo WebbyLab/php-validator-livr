@@ -33,6 +33,8 @@ class LIVR {
 
         'email'             => 'Validator\LIVR\Rules\Special::email',
         'equal_to_field'    => 'Validator\LIVR\Rules\Special::equal_to_field',
+        'url'               => 'Validator\LIVR\Rules\Special::url',
+        'iso_date'          => 'Validator\LIVR\Rules\Special::iso_date',
         'trim'              => 'Validator\LIVR\Rules\Filters::trim',
         'to_lc'             => 'Validator\LIVR\Rules\Filters::to_lc',
         'to_uc'             => 'Validator\LIVR\Rules\Filters::to_uc',

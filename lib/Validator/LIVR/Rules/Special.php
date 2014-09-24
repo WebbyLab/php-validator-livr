@@ -38,6 +38,50 @@ class  Special {
             return;
         };
     }
+
+    public static function url() {
+        return function($value) {
+            if( !isset($value) || $value === '' ) {
+                return;
+            }
+
+            $value = mb_strtolower($value, "UTF-8");
+
+            if (!preg_match('/^(http)(s)?/', $value)) {
+                return "WRONG_URL";
+            }
+
+            if (!filter_var(mb_strtolower($value), FILTER_VALIDATE_URL)) {
+                return 'WRONG_URL';
+            }
+
+            return;
+        };
+    }
+
+    public static function iso_date() {
+        return function($value) {
+            if( !isset($value) || $value === '' ) {
+                return;
+            }
+
+            $isoDateReg = '/^(\d{4})-(\d{2})-(\d{2})$/';
+
+            if (preg_match($isoDateReg, $value)) {
+                try {
+                    $date = new \DateTime($value);
+                    if( $date->format("Y-m-d") == $value ) {
+                        return;
+                    }
+
+                } catch (\Exception $e) {
+                    return "WRONG_DATE";
+                }
+            }
+
+            return "WRONG_DATE";
+        };
+    }
 }
 
 ?>

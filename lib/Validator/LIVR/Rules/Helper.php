@@ -29,7 +29,16 @@ class Helper {
         };
     }
 
-    public static function list_of($livr, $ruleBuilders) {
+    public static function list_of() {
+        $first_arg = func_get_arg(0);
+
+        if ( is_array($first_arg) && !\Validator\LIVR\Util::isAssocArray($first_arg) ) {
+            $livr         = func_get_arg(0);
+            $ruleBuilders = func_get_arg(1);
+        } else {
+            $livr         = func_get_args();
+            $ruleBuilders = array_pop($livr);
+        }
 
         $validator = new \Validator\LIVR( ['field' => $livr] );
         $validator->registerRules($ruleBuilders)->prepare();

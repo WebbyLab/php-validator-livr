@@ -4,7 +4,15 @@ namespace Validator\LIVR\Rules;
 
 class String {
 
-    public static function one_of($allowedValues) {
+    public static function one_of() {
+        $first_arg = func_get_arg(0);
+
+        if ( is_array($first_arg) && !\Validator\LIVR\Util::isAssocArray($first_arg) ) {
+            $allowedValues = $first_arg;
+        } else {
+            $allowedValues = func_get_args();
+            array_pop($allowedValues); # pop rule_builders
+        }
 
         return function($value) use($allowedValues) {
             if ( !isset($value) or $value === '' ) {
