@@ -16,7 +16,7 @@ class TestSuite extends PHPUnit_Framework_TestCase {
 
         $this->assertFalse( $validator->getErrors(), 'Validator should contain no errors' );
 
-        $this->assertEquals( $output, $data['output'], 'Validator should return validated data' );
+        $this->assertEquals( $data['output'], $output, 'Validator should return validated data' );
     }
 
     /**
@@ -31,7 +31,7 @@ class TestSuite extends PHPUnit_Framework_TestCase {
         $this->assertFalse($output ? true : false, 'Validator should return false');
 
 
-        $this->assertEquals( $validator->getErrors(), $data['errors'], 'Validator should contain valid errors' );
+        $this->assertEquals( $data['errors'], $validator->getErrors(), 'Validator should contain valid errors' );
     }
 
     public function positiveTestsProvider() {
