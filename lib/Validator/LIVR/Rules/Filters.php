@@ -71,6 +71,31 @@ class Filters {
         };
     }
 
+    public static function remove($chars) {
+        $removeReg = "/[".preg_quote($chars)."]/";
+
+        return function($value, $undef, &$outputArr) use($removeReg) {
+            if( $value && (is_string($value) || is_numeric($value)) ) {
+                $outputArr = preg_replace($removeReg, '', $value);
+            }
+
+            return;
+        };
+
+    }
+
+    public static function leave_only($chars) {
+        $leaveOnlyReg = "/[^".preg_quote($chars)."]/";
+
+        return function($value, $undef, &$outputArr) use($leaveOnlyReg) {
+            if( $value && (is_string($value) || is_numeric($value)) ) {
+                $outputArr = preg_replace($leaveOnlyReg, '', $value);
+            }
+
+            return;
+        };
+
+    }
 }
 
 

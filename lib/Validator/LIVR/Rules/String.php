@@ -100,7 +100,8 @@ class String {
 
 
     public static function like($re) {
-        $re = '/' . $re . '/';
+        $flags = func_num_args() == 3 ? func_get_arg(1) : "";
+        $re = '/' . $re . '/' . $flags;
 
         return function($value) use($re) {
             if ( !isset($value) or $value === '' ) {

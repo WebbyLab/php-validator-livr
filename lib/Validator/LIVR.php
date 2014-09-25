@@ -35,14 +35,17 @@ class LIVR {
         'equal_to_field'    => 'Validator\LIVR\Rules\Special::equal_to_field',
         'url'               => 'Validator\LIVR\Rules\Special::url',
         'iso_date'          => 'Validator\LIVR\Rules\Special::iso_date',
-        'trim'              => 'Validator\LIVR\Rules\Filters::trim',
-        'to_lc'             => 'Validator\LIVR\Rules\Filters::to_lc',
-        'to_uc'             => 'Validator\LIVR\Rules\Filters::to_uc',
+
         'nested_object'     => 'Validator\LIVR\Rules\Helper::nested_object',
         'list_of'           => 'Validator\LIVR\Rules\Helper::list_of',
         'list_of_objects'   => 'Validator\LIVR\Rules\Helper::list_of_objects',
         'list_of_different_objects'  => 'Validator\LIVR\Rules\Helper::list_of_different_objects',
 
+        'trim'              => 'Validator\LIVR\Rules\Filters::trim',
+        'to_lc'             => 'Validator\LIVR\Rules\Filters::to_lc',
+        'to_uc'             => 'Validator\LIVR\Rules\Filters::to_uc',
+        'remove'            => 'Validator\LIVR\Rules\Filters::remove',
+        'leave_only'        => 'Validator\LIVR\Rules\Filters::leave_only',
     ];
 
 
@@ -137,8 +140,8 @@ class LIVR {
                     $isOk = false;
 
                     break;
-                } elseif ( $isOk && array_key_exists($fieldName, $data) ) {
-                    $result[$fieldName] = (isset($fieldResult) && $fieldResult) ? $fieldResult : $value;
+                } elseif ( array_key_exists($fieldName, $data) ) {
+                    $result[$fieldName] = $fieldResult;
                 }
             }
 
