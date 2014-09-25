@@ -24,7 +24,7 @@ class Filters {
     }
 
 
-    public static function to_lc() {
+    public static function toLc() {
 
         return function($value, $undef, &$outputArr) {
             if( !isset($value) || $value === '') {
@@ -48,7 +48,7 @@ class Filters {
     }
 
 
-    public static function to_uc() {
+    public static function toUc() {
 
         return function($value, $undef, &$outputArr) {
             if( !isset($value) || $value === '') {
@@ -84,7 +84,7 @@ class Filters {
 
     }
 
-    public static function leave_only($chars) {
+    public static function leaveOnly($chars) {
         $leaveOnlyReg = "/[^".preg_quote($chars)."]/";
 
         return function($value, $undef, &$outputArr) use($leaveOnlyReg) {

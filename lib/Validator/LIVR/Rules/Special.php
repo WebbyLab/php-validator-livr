@@ -24,7 +24,7 @@ class  Special {
         };
     }
 
-    public static function equal_to_field($field) {
+    public static function equalToField($field) {
 
         return function($value, $params) use($field) {
             if( !isset($value) || $value === '' ) {
@@ -59,7 +59,7 @@ class  Special {
         };
     }
 
-    public static function iso_date() {
+    public static function isoDate() {
         return function($value) {
             if( !isset($value) || $value === '' ) {
                 return;

@@ -4,7 +4,7 @@ namespace Validator\LIVR\Rules;
 
 class Helper {
 
-    public static function nested_object($livr, $ruleBuilders) {
+    public static function nestedObject($livr, $ruleBuilders) {
 
         $validator = new \Validator\LIVR($livr);
         $validator->registerRules($ruleBuilders)->prepare();
@@ -29,7 +29,7 @@ class Helper {
         };
     }
 
-    public static function list_of() {
+    public static function listOf() {
         $first_arg = func_get_arg(0);
 
         if ( is_array($first_arg) && !\Validator\LIVR\Util::isAssocArray($first_arg) ) {
@@ -79,7 +79,7 @@ class Helper {
         };
     }
 
-    public function list_of_objects($livr, $ruleBuilders) {
+    public function listOfObjects($livr, $ruleBuilders) {
 
         $validator = new \Validator\LIVR( $livr );
         $validator->registerRules($ruleBuilders)->prepare();
@@ -119,7 +119,7 @@ class Helper {
         };
     }
 
-    public static function list_of_different_objects($selectorField, $livrs, $ruleBuilders) {
+    public static function listOfDifferentObjects($selectorField, $livrs, $ruleBuilders) {
 
         $validators = array();
 
