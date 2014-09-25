@@ -54,6 +54,15 @@ class LIVR {
         return;
     }
 
+    public static function registerAliasedDefaultRule($alias) {
+        if ( isset($alias['name']) ) {
+            throw new \Exception( "Alias name required" );
+        }
+
+        $DEFAULT_RULES[ $alias['name'] ] = $this->_buildAliasedRule($alias);
+        return $this;
+    }
+
     public static function getDefaultRules() {
         return self::$DEFAULT_RULES;
     }
@@ -200,6 +209,31 @@ class LIVR {
         array_push($funcArgs, $this->validatorBuilders);
 
         return call_user_func_array($this->validatorBuilders[$name], $funcArgs);
+    }
+
+    private function _buildAliasedRule($alias) {
+        if ( isset($alias['name']) ) {
+            throw new \Exception( "Alias name required" );
+        }
+        if ( isset($alias['rules']) ) {
+            throw new \Exception( "Alias rules required" );
+        }
+
+        return function($ruleBuilders) {
+            $validator = new \Validator\LIVR([ 'value' => $alias['rules'] ]);
+            $validator->registerRules($ruleBuilders)->prepare();
+
+            return function($value, $params, &$outputArr) use ($validator, $alias) {
+                $result = $validator->validate([ 'value' => $value ]);
+
+                if ($result) {
+                    $outputArr = $result['value'];
+                    return;
+                } else {
+                    return $alias['error'] || $validator->getErrors()['value'];
+                }
+            };
+        };
     }
 
     private function autoTrim($data) {
