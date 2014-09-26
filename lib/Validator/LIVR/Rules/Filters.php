@@ -24,7 +24,7 @@ class Filters {
     }
 
 
-    public static function to_lc() {
+    public static function toLc() {
 
         return function($value, $undef, &$outputArr) {
             if( !isset($value) || $value === '') {
@@ -48,7 +48,7 @@ class Filters {
     }
 
 
-    public static function to_uc() {
+    public static function toUc() {
 
         return function($value, $undef, &$outputArr) {
             if( !isset($value) || $value === '') {
@@ -71,6 +71,31 @@ class Filters {
         };
     }
 
+    public static function remove($chars) {
+        $removeReg = "/[".preg_quote($chars)."]/";
+
+        return function($value, $undef, &$outputArr) use($removeReg) {
+            if( $value && (is_string($value) || is_numeric($value)) ) {
+                $outputArr = preg_replace($removeReg, '', $value);
+            }
+
+            return;
+        };
+
+    }
+
+    public static function leaveOnly($chars) {
+        $leaveOnlyReg = "/[^".preg_quote($chars)."]/";
+
+        return function($value, $undef, &$outputArr) use($leaveOnlyReg) {
+            if( $value && (is_string($value) || is_numeric($value)) ) {
+                $outputArr = preg_replace($leaveOnlyReg, '', $value);
+            }
+
+            return;
+        };
+
+    }
 }
 
 

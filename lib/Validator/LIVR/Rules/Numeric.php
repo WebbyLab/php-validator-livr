@@ -19,7 +19,7 @@ class Numeric {
         };
     }
 
-    public static function positive_integer() {
+    public static function positiveInteger() {
 
         return function($value) {
             if ( !isset($value) or $value === '' ) {
@@ -49,7 +49,7 @@ class Numeric {
         };
     }
 
-    public static function positive_decimal() {
+    public static function positiveDecimal() {
 
         return function($value) {
             if ( !isset($value) or $value === '' ) {
@@ -64,7 +64,7 @@ class Numeric {
         };
     }
 
-    public static function max_number($maxNumer) {
+    public static function maxNumber($maxNumer) {
 
         return function($value) use ($maxNumer) {
             if ( !isset($value) or $value === '' ) {
@@ -78,7 +78,7 @@ class Numeric {
     }
 
 
-    public static function min_number($minNumer) {
+    public static function minNumber($minNumer) {
 
         return function($value) use ($minNumer) {
             if ( !isset($value) or $value === '' ) {
@@ -92,7 +92,7 @@ class Numeric {
     }
 
 
-    public static function number_between($minNumer, $maxNumer) {
+    public static function numberBetween($minNumer, $maxNumer) {
 
         return function($value) use ($minNumer, $maxNumer) {
             if ( !isset($value) or $value === '' ) {
