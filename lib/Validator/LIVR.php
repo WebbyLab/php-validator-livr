@@ -55,11 +55,11 @@ class LIVR {
     }
 
     public static function registerAliasedDefaultRule($alias) {
-        if ( isset($alias['name']) ) {
+        if ( !$alias['name'] ) {
             throw new \Exception( "Alias name required" );
         }
 
-        $DEFAULT_RULES[ $alias['name'] ] = $this->_buildAliasedRule($alias);
+        $DEFAULT_RULES[ $alias['name'] ] = $this->buildAliasedRule($alias);
         return $this;
     }
 
@@ -177,6 +177,14 @@ class LIVR {
         return $this;
     }
 
+    public function registerAliasedRule($alias) {
+        if ( !$alias['name'] ) {
+            throw new \Exception( "Alias name required" );
+        }
+
+        $this->validatorBuilders[ $alias['name'] ] = $this->buildAliasedRule($alias);
+    }
+
     public function getRules() {
         return $this->validatorBuilders;
     }
@@ -211,15 +219,15 @@ class LIVR {
         return call_user_func_array($this->validatorBuilders[$name], $funcArgs);
     }
 
-    private function _buildAliasedRule($alias) {
-        if ( isset($alias['name']) ) {
+    private function buildAliasedRule($alias) {
+        if ( !$alias['name'] ) {
             throw new \Exception( "Alias name required" );
         }
-        if ( isset($alias['rules']) ) {
+        if ( !$alias['rules'] ) {
             throw new \Exception( "Alias rules required" );
         }
 
-        return function($ruleBuilders) {
+        return function($ruleBuilders) use ($alias){
             $validator = new \Validator\LIVR([ 'value' => $alias['rules'] ]);
             $validator->registerRules($ruleBuilders)->prepare();
 
@@ -230,7 +238,7 @@ class LIVR {
                     $outputArr = $result['value'];
                     return;
                 } else {
-                    return $alias['error'] || $validator->getErrors()['value'];
+                    return isset($alias['error']) ? $alias['error'] : $validator->getErrors()['value'];
                 }
             };
         };
