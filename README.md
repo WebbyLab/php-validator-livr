@@ -1,5 +1,5 @@
 # NAME
-LIVR.Validator - Lightweight validator supporting Language Independent Validation Rules Specification (LIVR)
+Validator\LIVR - Lightweight validator supporting Language Independent Validation Rules Specification (LIVR)
 
 # SYNOPSIS
 Common usage:
@@ -10,7 +10,7 @@ Common usage:
     $validator  = new Validator\LIVR( [
         'name'      =>  'required',
         'email'     =>  [ 'required', 'email'],
-        'gender'    =>  [ 'one_of'     => [['male', 'female']] ],
+        'gender'    =>  [ 'one_of'     => ['male', 'female'] ],
         'phone'     =>  [ 'max_length' => 10 ],
         'password'  =>  [ 'required', ['min_length' => 10] ],
         'password2' =>  [ 'equal_to_field' => 'password' ]
@@ -89,13 +89,13 @@ $livr - validations rules. Rules description is available here - https://github.
 $isAutoTrim - asks validator to trim all values before validation. Output will be also trimmed.
 if isAutoTrim is undefined(or null) than defaultAutoTrim value will be used.
 
-## Validator\LIVR::registerDefaultRules(["rule\_name" => ruleBuilder ])
+## Validator\LIVR::registerDefaultRules([ "rule\_name" => ruleBuilder ])
 ruleBuilder - is a function reference which will be called for building single rule validator.
 
     Validator\LIVR::registerDefaultRules( 'my_rule' => function($arg1, $arg2, $arg3, $ruleBuilders) {
         // ruleBuilders - are rules from original validator
         // to allow you create new validator with all supported rules
-        // $validator = new Validator\LIVR($livr)->register_rules($ruleBuilders)->prepare();
+        // $validator = new Validator\LIVR($livr)->registerRules($ruleBuilders)->prepare();
 
         return function($value, $allValues, $outputArr) {
             if (notValid) {
@@ -131,7 +131,7 @@ Here is "max\_number" implemenation:
             }
         };
     };
-    LIVR.Validator.registerDefaultRules([ 'max_number' => $maxNumber ]);
+    LIVR\Validator->registerDefaultRules([ 'max_number' => $maxNumber ]);
 
 All rules for the validator are equal. It does not distinguish "required", "list\_of\_different\_objects" and "trim" rules. So, you can extend validator with any rules you like.
 
@@ -155,7 +155,7 @@ Validates user input. On success returns validData (contains only data that has 
         $errors = $validator->getErrors();
     }
 
-## validator.getErrors()
+## validator->getErrors()
 Returns errors array.
 
     [
@@ -185,10 +185,11 @@ returns array containing all ruleBuilders for the validator. You can register ne
 # AUTHOR
 koorchik (Viktor Turskyi)
 antonfin (Anton Morozov)
+wanderer (Danil Greben)
 k0stik (Konstantin Dvornik)
 
 # BUGS
-Please report any bugs or feature requests to Github https://github.com/koorchik/js-validator-livr
+Please report any bugs or feature requests to Github https://github.com/koorchik/php-validator-livr
 
 # LICENSE AND COPYRIGHT
 
