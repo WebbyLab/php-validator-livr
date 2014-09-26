@@ -97,8 +97,8 @@ ruleBuilder - is a function reference which will be called for building single r
         // to allow you create new validator with all supported rules
         // $validator = new Validator\LIVR($livr)->registerRules($ruleBuilders)->prepare();
 
-        return function($value, $allValues, $outputArr) {
-            if (notValid) {
+        return function($value, $allValues, &$outputArr) use ($notValid) {
+            if ($notValid) {
                 return "SOME_ERROR_CODE";
             }
             else {
@@ -178,6 +178,16 @@ For example:
 $ruleBuilder - is a function reference which will be called for building single rule validator.
 
 See "Validator\LIVR::registerDefaultRules" for rules examples.
+
+## $validator->registerAliasedRule(["name" => $ruleName, "rules" => $livrRules, "error" => errorCode]);
+Create custom rules easely and assign own error codes in case own need.
+See [rules-aliasing](https://github.com/koorchik/LIVR#rules-aliasing) in LIVR specification.
+
+    $validator->registerAliasedRule([
+        "name"  => "adult_age",
+        "rules" => [ "positive_integer", ["min_number" => 18] ],
+        "error" => "WRONG_AGE"
+    ]);
 
 ## $validator->getRules()
 returns array containing all ruleBuilders for the validator. You can register new rule or update existing one with "registerRules" method.
