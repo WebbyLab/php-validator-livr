@@ -100,8 +100,17 @@ class String {
 
 
     public static function like($re) {
-        $flags = func_num_args() == 3 ? func_get_arg(1) : "";
-        $re = '/' . $re . '/' . $flags;
+        $re = '/' . $re . '/';
+
+        if( func_num_args() == 3) { #Passed regexp flag
+            $flags = func_get_arg(1);
+
+            if ( $flags && $flags != 'i') {
+                throw new Exception("Only 'i' regexp flag supported, but '" . $flags . "' passed");
+            }
+
+            $re .= $flags;
+        };
 
         return function($value) use($re) {
             if ( !isset($value) or $value === '' ) {
