@@ -76,7 +76,7 @@ Use Composer for installation LIVR. Create composer.json file with following con
 ```json
     {
         "require": {
-            "koorchik/validator-livr": "dev-master"
+            "validator/livr": "dev-master"
         }
     }
 ```
@@ -95,10 +95,11 @@ ruleBuilder - is a function reference which will be called for building single r
     Validator\LIVR::registerDefaultRules( 'my_rule' => function($arg1, $arg2, $arg3, $ruleBuilders) {
         // ruleBuilders - are rules from original validator
         // to allow you create new validator with all supported rules
-        // $validator = new Validator\LIVR($livr);
-        // $validator->registerRules($ruleBuilders)->prepare();
-        ...
-        return function($value, $allValues, &$outputArr) use ($notValid) {
+        $validator = new Validator\LIVR($livr);
+        $validator->registerRules($ruleBuilders)->prepare();
+
+        return function($value, $allValues, &$outputArr) use ($validator) {
+            ...
             if ($notValid) {
                 return "SOME_ERROR_CODE";
             }
@@ -202,7 +203,7 @@ returns array containing all ruleBuilders for the validator. You can register ne
  * k0stik (Konstantin Dvornik)
 
 # BUGS
-Please report any bugs or feature requests to Github https://github.com/koorchik/php-validator-livr
+Please report any bugs or feature requests to Github https://github.com/WebbyLab/php-validator-livr
 
 # LICENSE AND COPYRIGHT
 

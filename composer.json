@@ -3,7 +3,7 @@
     "type": "library",
     "description": "Lightweight PHP validator supporting Language Independent Validation Rules Specification (LIVR) ",
     "keywords": ["validator", "livr"],
-    "homepage": "https://github.com/koorchik/php-validator-livr",
+    "homepage": "https://github.com/WebbyLab/php-validator-livr",
     "license": "MIT",
     "authors": [
         {
@@ -11,6 +11,12 @@
             "email": "koorchik@gmail.com",
             "homepage": "http://koorchik.blogspot.com/",
             "role": "Author"
+        },
+        {
+            "name": "Danil Greben",
+            "email": "greben.danil@gmail.com",
+            "homepage": "http://wanderer.in.ua",
+            "role": "Developer"
         },
         {
             "name": "Anton Morozov",
