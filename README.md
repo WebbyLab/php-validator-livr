@@ -3,7 +3,7 @@ Validator\LIVR - Lightweight validator supporting Language Independent Validatio
 
 # SYNOPSIS
 Common usage:
-
+```php
     require 'LIVR.php'
     Validator\LIVR::defaultAutoTrim(true);
 
@@ -23,19 +23,19 @@ Common usage:
     } else {
         $errors = $validator->getErrors();
     }
-
+```
 
 
 You can use filters separately or can combine them with validation:
-
+```php
     $validator = new Validator\LIVR([
         'email' => [ 'required', 'trim', 'email', 'to_lc' ]
     ]);
-
+```
 
 
 Feel free to register your own rules:
-
+```php
     $validator = new Validator\LIVR([
         'password' => ['required', 'strong_password']
     ]);
@@ -52,7 +52,7 @@ Feel free to register your own rules:
             }
         }
     } );
-
+```
 
 # DESCRIPTION
 See https://github.com/koorchik/LIVR for details.
@@ -73,13 +73,13 @@ Features:
 # INSTALL
 
 Use Composer for installation LIVR. Create composer.json file with following content:
-
+```json
     {
         "require": {
             "koorchik/validator-livr": "dev-master"
         }
     }
-
+```
 # CLASS METHODS
 
 ## new Validator\LIVR($livr, $isAutoTrim);
@@ -91,12 +91,13 @@ if isAutoTrim is undefined(or null) than defaultAutoTrim value will be used.
 
 ## Validator\LIVR::registerDefaultRules([ "rule\_name" => ruleBuilder ])
 ruleBuilder - is a function reference which will be called for building single rule validator.
-
+```php
     Validator\LIVR::registerDefaultRules( 'my_rule' => function($arg1, $arg2, $arg3, $ruleBuilders) {
         // ruleBuilders - are rules from original validator
         // to allow you create new validator with all supported rules
-        // $validator = new Validator\LIVR($livr)->registerRules($ruleBuilders)->prepare();
-
+        // $validator = new Validator\LIVR($livr);
+        // $validator->registerRules($ruleBuilders)->prepare();
+        ...
         return function($value, $allValues, &$outputArr) use ($notValid) {
             if ($notValid) {
                 return "SOME_ERROR_CODE";
@@ -106,18 +107,18 @@ ruleBuilder - is a function reference which will be called for building single r
             }
         }
     });
-
+```
 Then you can use "my\_rule" for validation:
-
+```php
     [
         'name1' => 'my_rule' // Call without parameters
         'name2' => [ 'my_rule'  => arg1 ] // Call with one parameter.
         'name3' => [ 'my_rule'  => [arg1] ] // Call with one parameter.
         'name4' => [ 'my_rule'  => [ arg1, arg2, arg3 ] ] // Call with many parameters.
     ]
-
+```
 Here is "max\_number" implemenation:
-
+```php
     function maxNumber($maxNumber) {
         return function($value) use($maxNumber) {
             // We do not validate empty fields. We have "required" rule for this purpose
@@ -132,7 +133,7 @@ Here is "max\_number" implemenation:
         };
     };
     LIVR\Validator->registerDefaultRules([ 'max_number' => $maxNumber ]);
-
+```
 All rules for the validator are equal. It does not distinguish "required", "list\_of\_different\_objects" and "trim" rules. So, you can extend validator with any rules you like.
 
 ## Validator\LIVR::getDefaultRules();
@@ -146,7 +147,7 @@ Enables or disables automatic trim for input data. If is on then every new valid
 
 ## $validator->validate($input)
 Validates user input. On success returns validData (contains only data that has described validation rules). On error return false.
-
+```php
     $validData = $validator->validate($input)
 
     if ($validData) {
@@ -154,49 +155,51 @@ Validates user input. On success returns validData (contains only data that has 
     } else {
         $errors = $validator->getErrors();
     }
-
+```
 ## validator->getErrors()
 Returns errors array.
-
+```php
     [
         "field1" => "ERROR_CODE",
         "field2" => "ERROR_CODE",
         ...
     ]
-
+```
 For example:
-
+```php
     [
         "country"   =>  "NOT_ALLOWED_VALUE",
         "zip"       =>  "NOT_POSITIVE_INTEGER",
         "street"    =>  "REQUIRED",
         "building"  =>  "NOT_POSITIVE_INTEGER"
     ]
-
+```
 ## $validator->registerRules(["rule_name" => ruleBuilder])
 
 $ruleBuilder - is a function reference which will be called for building single rule validator.
 
 See "Validator\LIVR::registerDefaultRules" for rules examples.
 
-## $validator->registerAliasedRule(["name" => $ruleName, "rules" => $livrRules, "error" => errorCode]);
+## $validator->registerAliasedRule([ "name"  => $ruleName, "rules" => $livrRules, "error" => $errorCode ]);
 Create custom rules easely and assign own error codes in case own need.
 See [rules-aliasing](https://github.com/koorchik/LIVR#rules-aliasing) in LIVR specification.
 
+```php
     $validator->registerAliasedRule([
         "name"  => "adult_age",
         "rules" => [ "positive_integer", ["min_number" => 18] ],
         "error" => "WRONG_AGE"
     ]);
+```
 
 ## $validator->getRules()
 returns array containing all ruleBuilders for the validator. You can register new rule or update existing one with "registerRules" method.
 
-# AUTHOR
-koorchik (Viktor Turskyi)
-antonfin (Anton Morozov)
-wanderer (Danil Greben)
-k0stik (Konstantin Dvornik)
+# AUTHORS
+ * koorchik (Viktor Turskyi)
+ * wanderer (Danil Greben)
+ * antonfin (Anton Morozov)
+ * k0stik (Konstantin Dvornik)
 
 # BUGS
 Please report any bugs or feature requests to Github https://github.com/koorchik/php-validator-livr
