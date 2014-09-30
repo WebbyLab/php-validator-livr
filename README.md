@@ -149,12 +149,13 @@ Enables or disables automatic trim for input data. If is on then every new valid
 ## $validator->validate($input)
 Validates user input. On success returns validData (contains only data that has described validation rules). On error return false.
 ```php
-    $validData = $validator->validate($input)
+    $validData = $validator->validate($input);
+    $errors    = $validator->getErrors();
 
-    if ($validData) {
-        // use $validData
+    if ($errors) {
+        // Throw exceptions, write logs, show error messages, etc, using $errors
     } else {
-        $errors = $validator->getErrors();
+        // Use $vaidData
     }
 ```
 ## validator->getErrors()
