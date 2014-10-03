@@ -79,7 +79,7 @@ class Helper {
         };
     }
 
-    public function listOfObjects($livr, $ruleBuilders) {
+    public static function listOfObjects($livr, $ruleBuilders) {
 
         $validator = new \Validator\LIVR( $livr );
         $validator->registerRules($ruleBuilders)->prepare();
