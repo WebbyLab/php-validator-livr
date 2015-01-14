@@ -11,6 +11,10 @@ class Numeric {
                 return;
             }
 
+            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+                return 'FORMAT_ERROR';
+            }
+
             if ( !is_numeric($value) or !preg_match("/^\-?\d+$/", $value) ) {
                 return 'NOT_INTEGER';
             }
@@ -24,6 +28,10 @@ class Numeric {
         return function($value) {
             if ( !isset($value) or $value === '' ) {
                 return;
+            }
+
+            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+                return 'FORMAT_ERROR';
             }
 
             if ( !is_numeric($value) or !preg_match( "/^\d+$/", $value) || $value <= 0 ) {
@@ -41,6 +49,10 @@ class Numeric {
                 return;
             }
 
+            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+                return 'FORMAT_ERROR';
+            }
+
             if ( !is_numeric($value) or !preg_match("/^\-?[\d.]+$/", $value) ) {
                 return 'NOT_DECIMAL';
             }
@@ -54,6 +66,10 @@ class Numeric {
         return function($value) {
             if ( !isset($value) or $value === '' ) {
                 return;
+            }
+
+            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+                return 'FORMAT_ERROR';
             }
 
             if ( !is_numeric($value) or !preg_match("/^[\d.]+$/", $value) or $value <= 0 ) {
@@ -71,6 +87,10 @@ class Numeric {
                 return;
             }
 
+            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+                return 'FORMAT_ERROR';
+            }
+
             if ( $value > $maxNumer ) return 'TOO_HIGH';
 
             return;
@@ -83,6 +103,10 @@ class Numeric {
         return function($value) use ($minNumer) {
             if ( !isset($value) or $value === '' ) {
                 return;
+            }
+
+            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+                return 'FORMAT_ERROR';
             }
 
             if ( $value < $minNumer ) return 'TOO_LOW';
@@ -98,6 +122,10 @@ class Numeric {
             if ( !isset($value) or $value === '' ) {
                 return;
             };
+
+            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+                return 'FORMAT_ERROR';
+            }
 
             if ( $value < $minNumer ) return 'TOO_LOW';
             if ( $value > $maxNumer ) return 'TOO_HIGH';

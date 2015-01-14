@@ -19,6 +19,10 @@ class String {
                 return;
             }
 
+            if (!is_string($value)) {
+                return 'FORMAT_ERROR';
+            }
+
             if ( ! in_array($value, $allowedValues) ) {
                 return 'NOT_ALLOWED_VALUE';
             }
@@ -33,6 +37,10 @@ class String {
         return function($value) use($maxLength) {
             if ( !isset($value) or $value === '' ) {
                 return;
+            }
+
+            if (!is_string($value)) {
+                return 'FORMAT_ERROR';
             }
 
             if ( mb_strlen($value, "UTF-8") > $maxLength ) {
@@ -51,6 +59,10 @@ class String {
                 return;
             }
 
+            if (!is_string($value)) {
+                return 'FORMAT_ERROR';
+            }
+
             if ( mb_strlen($value, "UTF-8") < $minLength ) {
                 return 'TOO_SHORT';
             }
@@ -65,6 +77,10 @@ class String {
         return function($value) use($length) {
             if ( !isset($value) or $value === '' ) {
                 return;
+            }
+
+            if (!is_string($value)) {
+                return 'FORMAT_ERROR';
             }
 
             if ( mb_strlen($value, "UTF-8") < $length ) {
@@ -84,6 +100,10 @@ class String {
         return function($value) use($minLength, $maxLength) {
             if ( !isset($value) or $value === '' ) {
                 return;
+            }
+
+            if (!is_string($value)) {
+                return 'FORMAT_ERROR';
             }
 
             if ( mb_strlen($value, "UTF-8") < $minLength ) {
@@ -115,6 +135,10 @@ class String {
         return function($value) use($re) {
             if ( !isset($value) or $value === '' ) {
                 return;
+            }
+
+            if (!is_string($value)) {
+                return 'FORMAT_ERROR';
             }
 
             if (! preg_match($re, $value) ) {
