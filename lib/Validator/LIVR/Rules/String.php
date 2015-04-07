@@ -19,7 +19,7 @@ class String {
                 return;
             }
 
-            if (!is_string($value)) {
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
                 return 'FORMAT_ERROR';
             }
 
@@ -39,7 +39,7 @@ class String {
                 return;
             }
 
-            if (!is_string($value)) {
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
                 return 'FORMAT_ERROR';
             }
 
@@ -59,7 +59,7 @@ class String {
                 return;
             }
 
-            if (!is_string($value)) {
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
                 return 'FORMAT_ERROR';
             }
 
@@ -79,7 +79,7 @@ class String {
                 return;
             }
 
-            if (!is_string($value)) {
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
                 return 'FORMAT_ERROR';
             }
 
@@ -102,7 +102,7 @@ class String {
                 return;
             }
 
-            if (!is_string($value)) {
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
                 return 'FORMAT_ERROR';
             }
 
@@ -137,7 +137,7 @@ class String {
                 return;
             }
 
-            if (!is_string($value)) {
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
                 return 'FORMAT_ERROR';
             }
 

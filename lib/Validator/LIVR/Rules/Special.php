@@ -28,14 +28,14 @@ class  Special {
         };
     }
 
-    public static function equalToField($field) { //TODO: clarify behavior if one of or both compared fields has one of numeric types
+    public static function equalToField($field) {
 
         return function($value, $params) use($field) {
             if( !isset($value) || $value === '' ) {
                 return;
             }
 
-            if (!is_string($value)) { // !\Validator\LIVR\Util::isStringOrNumber($value) ??
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
                 return 'FORMAT_ERROR';
             }
 
