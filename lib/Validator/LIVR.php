@@ -4,14 +4,14 @@ namespace Validator;
 
 class LIVR {
     private $isPrepared = false;
-    private $livrRules  = [];
-    private $validators = [];
-    private $validatorBuilders = [];
+    private $livrRules  = array();
+    private $validators = array();
+    private $validatorBuilders = array();
     private $errors     = false;
     private $isAutoTrim = false;
 
     private static $IS_DEFAULT_AUTO_TRIM = 0;
-    private static $DEFAULT_RULES = [
+    private static $DEFAULT_RULES = array(
         'required'          => 'Validator\LIVR\Rules\Common::required',
         'not_empty'         => 'Validator\LIVR\Rules\Common::notEmpty',
         'not_empty_list'    => 'Validator\LIVR\Rules\Common::notEmptyList',
@@ -46,7 +46,7 @@ class LIVR {
         'to_uc'             => 'Validator\LIVR\Rules\Filters::toUc',
         'remove'            => 'Validator\LIVR\Rules\Filters::remove',
         'leave_only'        => 'Validator\LIVR\Rules\Filters::leaveOnly',
-    ];
+    );
 
 
     public static function registerDefaultRules($rules) {
@@ -89,10 +89,10 @@ class LIVR {
 
         foreach ( $this->livrRules as $field => $fieldRules ) {
             if ( !is_array($fieldRules) || \Validator\LIVR\Util::isAssocArray($fieldRules) ) {
-                $fieldRules = [$fieldRules];
+                $fieldRules = array($fieldRules);
             }
 
-            $validators = [];
+            $validators = array();
 
             foreach ($fieldRules as $rule) {
                 list($name, $args) = $this->parseRule($rule);
@@ -121,8 +121,8 @@ class LIVR {
             $data = $this->autoTrim($data);
         }
 
-        $errors = [];
-        $result = [];
+        $errors = array();
+        $result = array();
 
         foreach ( $this->validators as $fieldName => $validators ) {
 
@@ -197,14 +197,14 @@ class LIVR {
             $args = $livrRule[$name];
 
             if ( !is_array($args) || \Validator\LIVR\Util::isAssocArray($args) ) {
-                $args = [$args];
+                $args = array($args);
             }
         } else {
              $name = $livrRule;
-             $args = [];
+             $args = array();
         }
 
-        return [$name, $args];
+        return array($name, $args);
     }
 
 
@@ -228,17 +228,18 @@ class LIVR {
         }
 
         return function($ruleBuilders) use ($alias){
-            $validator = new \Validator\LIVR([ 'value' => $alias['rules'] ]);
+            $validator = new \Validator\LIVR(array('value' => $alias['rules']));
             $validator->registerRules($ruleBuilders)->prepare();
 
             return function($value, $params, &$outputArr) use ($validator, $alias) {
-                $result = $validator->validate([ 'value' => $value ]);
+                $result = $validator->validate(array('value' => $value));
 
                 if ($result) {
                     $outputArr = $result['value'];
                     return;
                 } else {
-                    return isset($alias['error']) ? $alias['error'] : $validator->getErrors()['value'];
+                    $errors = $validator->getErrors();
+                    return isset($alias['error']) ? $alias['error'] : $errors['value'];
                 }
             };
         };
