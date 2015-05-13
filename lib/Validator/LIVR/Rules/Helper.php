@@ -40,7 +40,7 @@ class Helper {
             $ruleBuilders = array_pop($livr);
         }
 
-        $validator = new \Validator\LIVR( ['field' => $livr] );
+        $validator = new \Validator\LIVR( array('field' => $livr) );
         $validator->registerRules($ruleBuilders)->prepare();
 
         return function($values, $params, &$outputArr) use($validator) {
