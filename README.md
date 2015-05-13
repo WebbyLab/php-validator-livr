@@ -1,6 +1,7 @@
+[![Build Status](https://travis-ci.org/WebbyLab/php-validator-livr.svg?branch=master)](https://travis-ci.org/WebbyLab/php-validator-livr)
+
 # NAME
 Validator\LIVR - Lightweight validator supporting Language Independent Validation Rules Specification (LIVR)
-[![Build Status](https://travis-ci.org/WebbyLab/php-validator-livr.svg?branch=master)](https://travis-ci.org/WebbyLab/php-validator-livr)
 
 # SYNOPSIS
 Common usage:
