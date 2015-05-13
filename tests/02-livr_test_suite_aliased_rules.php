@@ -2,7 +2,7 @@
 
 require 'vendor/autoload.php';
 
-class TestSuite extends PHPUnit_Framework_TestCase {
+class AliasedRulesTest extends PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider positiveTestsProvider
