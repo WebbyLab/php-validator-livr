@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.3/phpunit.xsd"
+    colors="true">
+
+    <logging>
+        <log type="coverage-text" target="php://stdout"/>
+    </logging>
+
+    <testsuites>
+        <testsuite name="LIVR suite">
+            <file>tests/01-livr_test_suite.php</file>
+            <file>tests/02-livr_test_suite_aliased_rules.php</file>
+            <file>tests/03-auto_trim.php</file>
+            <file>tests/04-custom_filters.php</file>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <blacklist>
+              <directory>vendor</directory>
+              <directory>tests</directory>
+        </blacklist>
+    </filter>
+</phpunit>
