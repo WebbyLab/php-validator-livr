@@ -38,9 +38,9 @@ class CustomFiltersTest extends PHPUnit_Framework_TestCase {
         ]);
 
         $validator = new Validator\LIVR([
-            'word1' => ['my_trim', 'my_lc', 'my_ucfirst'],
-            'word2' => ['my_trim', 'my_lc'],
-            'word3' => ['my_ucfirst'],
+            'word1' => array('my_trim', 'my_lc', 'my_ucfirst'),
+            'word2' => array('my_trim', 'my_lc'),
+            'word3' => array('my_ucfirst'),
         ]);
 
         $output = $validator->validate([

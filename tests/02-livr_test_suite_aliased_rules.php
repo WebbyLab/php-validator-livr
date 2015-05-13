@@ -65,7 +65,7 @@ class AliasedRulesTest extends PHPUnit_Framework_TestCase {
                     'output'    => json_decode(file_get_contents("$dir/$entry/output.json"),  true),
                     'aliases'   => json_decode(file_get_contents("$dir/$entry/aliases.json"), true),
                 );
-                array_push($pull, [$data, $entry]);
+                array_push($pull, array($data, $entry));
             }
         }
 
@@ -98,7 +98,7 @@ class AliasedRulesTest extends PHPUnit_Framework_TestCase {
                     'errors'    => json_decode(file_get_contents("$dir/$entry/errors.json"),  true),
                     'aliases'   => json_decode(file_get_contents("$dir/$entry/aliases.json"), true),
                 );
-                array_push($pull, [$data, $entry]);
+                array_push($pull, array($data, $entry));
             }
         }
 

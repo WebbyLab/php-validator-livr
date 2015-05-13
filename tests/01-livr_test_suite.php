@@ -59,7 +59,7 @@ class LIVRTestSuite extends PHPUnit_Framework_TestCase {
                     'rules'     => json_decode(file_get_contents("$dir/$entry/rules.json"),  true),
                     'output'    => json_decode(file_get_contents("$dir/$entry/output.json"), true),
                 );
-                array_push($pull, [$data, $entry]);
+                array_push($pull, array($data, $entry));
             }
         }
 
@@ -91,7 +91,7 @@ class LIVRTestSuite extends PHPUnit_Framework_TestCase {
                     'rules'     => json_decode(file_get_contents("$dir/$entry/rules.json"),  true),
                     'errors'    => json_decode(file_get_contents("$dir/$entry/errors.json"), true),
                 );
-                array_push($pull, [$data, $entry]);
+                array_push($pull, array($data, $entry));
             }
         }
 
