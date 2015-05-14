@@ -40,7 +40,7 @@ class Helper {
             $ruleBuilders = array_pop($livr);
         }
 
-        $validator = new \Validator\LIVR( ['field' => $livr] );
+        $validator = new \Validator\LIVR( array('field' => $livr) );
         $validator->registerRules($ruleBuilders)->prepare();
 
         return function($values, $params, &$outputArr) use($validator) {
@@ -64,7 +64,8 @@ class Helper {
                     $errors[]  = null;
                 } else {
                     $results[] = null;
-                    $errors[]  = $validator->getErrors()['field'];
+                    $validatorErrors = $validator->getErrors();
+                    $errors[]  = $validatorErrors['field'];
                     $hasErrors = true;
 
                 }

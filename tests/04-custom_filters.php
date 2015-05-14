@@ -4,7 +4,7 @@ require 'vendor/autoload.php';
 class CustomFiltersTest extends PHPUnit_Framework_TestCase {
 
     public function testPositive() {
-        Validator\LIVR::registerDefaultRules([
+        Validator\LIVR::registerDefaultRules(array(
             'my_ucfirst' => function() {
                 return function($value, $params, &$outputRef) {
                     if ( !isset($value) or $value == '' ) {
@@ -35,25 +35,25 @@ class CustomFiltersTest extends PHPUnit_Framework_TestCase {
                     return;
                 };
             }
-        ]);
+        ));
 
-        $validator = new Validator\LIVR([
-            'word1' => ['my_trim', 'my_lc', 'my_ucfirst'],
-            'word2' => ['my_trim', 'my_lc'],
-            'word3' => ['my_ucfirst'],
-        ]);
+        $validator = new Validator\LIVR(array(
+            'word1' => array('my_trim', 'my_lc', 'my_ucfirst'),
+            'word2' => array('my_trim', 'my_lc'),
+            'word3' => array('my_ucfirst'),
+        ));
 
-        $output = $validator->validate([
+        $output = $validator->validate(array(
             'word1' => ' wordOne ',
             'word2' => ' wordTwo ',
             'word3' => 'wordThree ',
-        ]);
+        ));
 
-        $this->assertEquals($output,[
+        $this->assertEquals($output,array(
             'word1' => 'Wordone',
             'word2' => 'wordtwo',
             'word3' => 'WordThree '
-        ]);
+        ));
 
     }
 
