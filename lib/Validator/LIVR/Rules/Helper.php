@@ -64,7 +64,8 @@ class Helper {
                     $errors[]  = null;
                 } else {
                     $results[] = null;
-                    $errors[]  = $validator->getErrors()['field'];
+                    $validatorErrors = $validator->getErrors();
+                    $errors[]  = $validatorErrors['field'];
                     $hasErrors = true;
 
                 }
