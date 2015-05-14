@@ -49,7 +49,7 @@ class CustomFiltersTest extends PHPUnit_Framework_TestCase {
             'word3' => 'wordThree ',
         ));
 
-        $this->assertEquals($output,array(
+        $this->assertEquals($output, array(
             'word1' => 'Wordone',
             'word2' => 'wordtwo',
             'word3' => 'WordThree '

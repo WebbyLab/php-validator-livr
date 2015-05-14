@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/WebbyLab/php-validator-livr.svg?branch=master)](https://travis-ci.org/WebbyLab/php-validator-livr)
+
 # NAME
 Validator\LIVR - Lightweight validator supporting Language Independent Validation Rules Specification (LIVR)
 
@@ -40,7 +42,7 @@ Feel free to register your own rules:
         'password' => ['required', 'strong_password']
     ]);
 
-    $validator->registerRules( 'strong_password', function() {
+    $validator->registerRules([ 'strong_password', function() {
         return function($value) {
             // We already have "required" rule to check that the value is present
             if ( !isset($value) || $value === '' ) {
@@ -51,7 +53,7 @@ Feel free to register your own rules:
                 return 'WEAK_PASSWORD'
             }
         }
-    } );
+    } ]);
 ```
 
 # DESCRIPTION
@@ -92,7 +94,7 @@ if isAutoTrim is undefined(or null) than defaultAutoTrim value will be used.
 ## Validator\LIVR::registerDefaultRules([ "rule\_name" => ruleBuilder ])
 ruleBuilder - is a function reference which will be called for building single rule validator.
 ```php
-    Validator\LIVR::registerDefaultRules( 'my_rule' => function($arg1, $arg2, $arg3, $ruleBuilders) {
+    Validator\LIVR::registerDefaultRules([ 'my_rule' => function($arg1, $arg2, $arg3, $ruleBuilders) {
         // ruleBuilders - are rules from original validator
         // to allow you create new validator with all supported rules
         $validator = new Validator\LIVR($livr);
@@ -107,7 +109,7 @@ ruleBuilder - is a function reference which will be called for building single r
 
             }
         }
-    });
+    } ]);
 ```
 Then you can use "my\_rule" for validation:
 ```php
