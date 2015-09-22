@@ -11,7 +11,7 @@ class String {
                 return;
             }
 
-            if ( ! in_array($value, $allowedValues) ) {
+            if ( ! in_array($value, $allowedValues, true) ) {
                 return 'NOT_ALLOWED_VALUE';
             }
 
