@@ -7,5 +7,6 @@
     "city6": [{ "one_of": [["2", "4", "6"]] }],
     "city7": [{ "one_of": [["0", "1", "2"]] }],
     "city8": [{ "one_of": [["0", "1", "2"]] }],
+    "city9": { "one_of": ["Moscow", "Kiev"] },
     "empty_city": { "one_of": [["Moscow", "Kiev" ]] }
 }

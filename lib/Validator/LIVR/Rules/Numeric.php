@@ -11,6 +11,10 @@ class Numeric {
                 return;
             }
 
+            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+                return 'FORMAT_ERROR';
+            }
+
             if ( !is_numeric($value) or !preg_match("/^\-?\d+$/", $value) ) {
                 return 'NOT_INTEGER';
             }
@@ -19,11 +23,15 @@ class Numeric {
         };
     }
 
-    public static function positive_integer() {
+    public static function positiveInteger() {
 
         return function($value) {
             if ( !isset($value) or $value === '' ) {
                 return;
+            }
+
+            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+                return 'FORMAT_ERROR';
             }
 
             if ( !is_numeric($value) or !preg_match( "/^\d+$/", $value) || $value <= 0 ) {
@@ -41,6 +49,10 @@ class Numeric {
                 return;
             }
 
+            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+                return 'FORMAT_ERROR';
+            }
+
             if ( !is_numeric($value) or !preg_match("/^\-?[\d.]+$/", $value) ) {
                 return 'NOT_DECIMAL';
             }
@@ -49,11 +61,15 @@ class Numeric {
         };
     }
 
-    public static function positive_decimal() {
+    public static function positiveDecimal() {
 
         return function($value) {
             if ( !isset($value) or $value === '' ) {
                 return;
+            }
+
+            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+                return 'FORMAT_ERROR';
             }
 
             if ( !is_numeric($value) or !preg_match("/^[\d.]+$/", $value) or $value <= 0 ) {
@@ -64,11 +80,15 @@ class Numeric {
         };
     }
 
-    public static function max_number($maxNumer) {
+    public static function maxNumber($maxNumer) {
 
         return function($value) use ($maxNumer) {
             if ( !isset($value) or $value === '' ) {
                 return;
+            }
+
+            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+                return 'FORMAT_ERROR';
             }
 
             if ( $value > $maxNumer ) return 'TOO_HIGH';
@@ -78,11 +98,15 @@ class Numeric {
     }
 
 
-    public static function min_number($minNumer) {
+    public static function minNumber($minNumer) {
 
         return function($value) use ($minNumer) {
             if ( !isset($value) or $value === '' ) {
                 return;
+            }
+
+            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+                return 'FORMAT_ERROR';
             }
 
             if ( $value < $minNumer ) return 'TOO_LOW';
@@ -92,12 +116,16 @@ class Numeric {
     }
 
 
-    public static function number_between($minNumer, $maxNumer) {
+    public static function numberBetween($minNumer, $maxNumer) {
 
         return function($value) use ($minNumer, $maxNumer) {
             if ( !isset($value) or $value === '' ) {
                 return;
             };
+
+            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+                return 'FORMAT_ERROR';
+            }
 
             if ( $value < $minNumer ) return 'TOO_LOW';
             if ( $value > $maxNumer ) return 'TOO_HIGH';

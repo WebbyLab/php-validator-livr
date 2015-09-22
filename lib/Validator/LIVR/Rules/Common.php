@@ -13,7 +13,7 @@ class Common {
         };
     }
 
-    public static function not_empty() {
+    public static function notEmpty() {
 
         return function($value) {
             if ( isset($value) and $value === '' ) {
@@ -22,7 +22,7 @@ class Common {
         };
     }
 
-    public static function not_empty_list() {
+    public static function notEmptyList() {
 
         return function($list) {
 

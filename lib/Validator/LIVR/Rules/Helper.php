@@ -4,7 +4,7 @@ namespace Validator\LIVR\Rules;
 
 class Helper {
 
-    public static function nested_object($livr, $ruleBuilders) {
+    public static function nestedObject($livr, $ruleBuilders) {
 
         $validator = new \Validator\LIVR($livr);
         $validator->registerRules($ruleBuilders)->prepare();
@@ -29,9 +29,18 @@ class Helper {
         };
     }
 
-    public static function list_of($livr, $ruleBuilders) {
+    public static function listOf() {
+        $first_arg = func_get_arg(0);
 
-        $validator = new \Validator\LIVR( ['field' => $livr] );
+        if ( is_array($first_arg) && !\Validator\LIVR\Util::isAssocArray($first_arg) ) {
+            $livr         = func_get_arg(0);
+            $ruleBuilders = func_get_arg(1);
+        } else {
+            $livr         = func_get_args();
+            $ruleBuilders = array_pop($livr);
+        }
+
+        $validator = new \Validator\LIVR( array('field' => $livr) );
         $validator->registerRules($ruleBuilders)->prepare();
 
         return function($values, $params, &$outputArr) use($validator) {
@@ -55,7 +64,8 @@ class Helper {
                     $errors[]  = null;
                 } else {
                     $results[] = null;
-                    $errors[]  = $validator->getErrors()['field'];
+                    $validatorErrors = $validator->getErrors();
+                    $errors[]  = $validatorErrors['field'];
                     $hasErrors = true;
 
                 }
@@ -70,7 +80,7 @@ class Helper {
         };
     }
 
-    public function list_of_objects($livr, $ruleBuilders) {
+    public static function listOfObjects($livr, $ruleBuilders) {
 
         $validator = new \Validator\LIVR( $livr );
         $validator->registerRules($ruleBuilders)->prepare();
@@ -110,7 +120,7 @@ class Helper {
         };
     }
 
-    public static function list_of_different_objects($selectorField, $livrs, $ruleBuilders) {
+    public static function listOfDifferentObjects($selectorField, $livrs, $ruleBuilders) {
 
         $validators = array();
 

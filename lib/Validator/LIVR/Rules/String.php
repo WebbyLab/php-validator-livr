@@ -4,14 +4,28 @@ namespace Validator\LIVR\Rules;
 
 class String {
 
-    public static function one_of($allowedValues) {
+    public static function oneOf() {
+        $first_arg = func_get_arg(0);
+
+        if ( is_array($first_arg) && !\Validator\LIVR\Util::isAssocArray($first_arg) ) {
+            $allowedValues = $first_arg;
+        } else {
+            $allowedValues = func_get_args();
+            array_pop($allowedValues); # pop rule_builders
+        }
+
         $modifiedAllowedValues = array();
         foreach ( $allowedValues as $v ) {
             $modifiedAllowedValues[] = (string) $v;
         }
+
         return function($value) use($modifiedAllowedValues) {
             if ( !isset($value) or $value === '' ) {
                 return;
+            }
+
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
+                return 'FORMAT_ERROR';
             }
 
             if ( ! in_array((string) $value, $modifiedAllowedValues, true) ) {
@@ -23,11 +37,15 @@ class String {
     }
 
 
-    public static function max_length($maxLength) {
+    public static function maxLength($maxLength) {
 
         return function($value) use($maxLength) {
             if ( !isset($value) or $value === '' ) {
                 return;
+            }
+
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
+                return 'FORMAT_ERROR';
             }
 
             if ( mb_strlen($value, "UTF-8") > $maxLength ) {
@@ -39,11 +57,15 @@ class String {
     }
 
 
-    public static function min_length($minLength) {
+    public static function minLength($minLength) {
 
         return function($value) use($minLength) {
             if ( !isset($value) or $value === '' ) {
                 return;
+            }
+
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
+                return 'FORMAT_ERROR';
             }
 
             if ( mb_strlen($value, "UTF-8") < $minLength ) {
@@ -55,11 +77,15 @@ class String {
     }
 
 
-    public static function length_equal($length) {
+    public static function lengthEqual($length) {
 
         return function($value) use($length) {
             if ( !isset($value) or $value === '' ) {
                 return;
+            }
+
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
+                return 'FORMAT_ERROR';
             }
 
             if ( mb_strlen($value, "UTF-8") < $length ) {
@@ -74,11 +100,15 @@ class String {
         };
     }
 
-    public static function length_between($minLength, $maxLength) {
+    public static function lengthBetween($minLength, $maxLength) {
 
         return function($value) use($minLength, $maxLength) {
             if ( !isset($value) or $value === '' ) {
                 return;
+            }
+
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
+                return 'FORMAT_ERROR';
             }
 
             if ( mb_strlen($value, "UTF-8") < $minLength ) {
@@ -97,9 +127,23 @@ class String {
     public static function like($re) {
         $re = '/' . $re . '/';
 
+        if( func_num_args() == 3) { #Passed regexp flag
+            $flags = func_get_arg(1);
+
+            if ( $flags && $flags != 'i') {
+                throw new Exception("Only 'i' regexp flag supported, but '" . $flags . "' passed");
+            }
+
+            $re .= $flags;
+        };
+
         return function($value) use($re) {
             if ( !isset($value) or $value === '' ) {
                 return;
+            }
+
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
+                return 'FORMAT_ERROR';
             }
 
             if (! preg_match($re, $value) ) {

@@ -2,7 +2,7 @@
 
 require 'vendor/autoload.php';
 
-class TestSuite extends PHPUnit_Framework_TestCase {
+class LIVRTestSuite extends PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider positiveTestsProvider
@@ -16,7 +16,7 @@ class TestSuite extends PHPUnit_Framework_TestCase {
 
         $this->assertFalse( $validator->getErrors(), 'Validator should contain no errors' );
 
-        $this->assertEquals( $output, $data['output'], 'Validator should return validated data' );
+        $this->assertEquals( $data['output'], $output, 'Validator should return validated data' );
     }
 
     /**
@@ -31,7 +31,7 @@ class TestSuite extends PHPUnit_Framework_TestCase {
         $this->assertFalse($output ? true : false, 'Validator should return false');
 
 
-        $this->assertEquals( $validator->getErrors(), $data['errors'], 'Validator should contain valid errors' );
+        $this->assertEquals( $data['errors'], $validator->getErrors(), 'Validator should contain valid errors' );
     }
 
     public function positiveTestsProvider() {
@@ -59,7 +59,7 @@ class TestSuite extends PHPUnit_Framework_TestCase {
                     'rules'     => json_decode(file_get_contents("$dir/$entry/rules.json"),  true),
                     'output'    => json_decode(file_get_contents("$dir/$entry/output.json"), true),
                 );
-                array_push($pull, [$data, $entry]);
+                array_push($pull, array($data, $entry));
             }
         }
 
@@ -91,7 +91,7 @@ class TestSuite extends PHPUnit_Framework_TestCase {
                     'rules'     => json_decode(file_get_contents("$dir/$entry/rules.json"),  true),
                     'errors'    => json_decode(file_get_contents("$dir/$entry/errors.json"), true),
                 );
-                array_push($pull, [$data, $entry]);
+                array_push($pull, array($data, $entry));
             }
         }
 
