@@ -14,7 +14,12 @@ class String {
             array_pop($allowedValues); # pop rule_builders
         }
 
-        return function($value) use($allowedValues) {
+        $modifiedAllowedValues = array();
+        foreach ( $allowedValues as $v ) {
+            $modifiedAllowedValues[] = (string) $v;
+        }
+
+        return function($value) use($modifiedAllowedValues) {
             if ( !isset($value) or $value === '' ) {
                 return;
             }
@@ -23,7 +28,7 @@ class String {
                 return 'FORMAT_ERROR';
             }
 
-            if ( ! in_array($value, $allowedValues) ) {
+            if ( ! in_array((string) $value, $modifiedAllowedValues, true) ) {
                 return 'NOT_ALLOWED_VALUE';
             }
 
