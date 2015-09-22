@@ -5,13 +5,16 @@ namespace Validator\LIVR\Rules;
 class String {
 
     public static function one_of($allowedValues) {
-
-        return function($value) use($allowedValues) {
+        $modifiedAllowedValues = array();
+        foreach ( $allowedValues as $v ) {
+            $modifiedAllowedValues[] = (string) $v;
+        }
+        return function($value) use($modifiedAllowedValues) {
             if ( !isset($value) or $value === '' ) {
                 return;
             }
 
-            if ( ! in_array($value, $allowedValues, true) ) {
+            if ( ! in_array((string) $value, $modifiedAllowedValues, true) ) {
                 return 'NOT_ALLOWED_VALUE';
             }
 
