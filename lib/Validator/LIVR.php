@@ -70,8 +70,8 @@ class LIVR
             throw new \Exception("Alias name required");
         }
 
-        $DEFAULT_RULES[ $alias['name'] ] = $this->buildAliasedRule($alias);
-        return $this;
+        self::$DEFAULT_RULES[ $alias['name'] ] = self::buildAliasedRule($alias);
+        return;
     }
 
     public static function getDefaultRules()
@@ -201,7 +201,7 @@ class LIVR
             throw new \Exception("Alias name required");
         }
 
-        $this->validatorBuilders[ $alias['name'] ] = $this->buildAliasedRule($alias);
+        $this->validatorBuilders[ $alias['name'] ] = self::buildAliasedRule($alias);
     }
 
     public function getRules()
@@ -241,7 +241,7 @@ class LIVR
         return call_user_func_array($this->validatorBuilders[$name], $funcArgs);
     }
 
-    private function buildAliasedRule($alias)
+    private static function buildAliasedRule($alias)
     {
         if (!$alias['name']) {
             throw new \Exception("Alias name required");
