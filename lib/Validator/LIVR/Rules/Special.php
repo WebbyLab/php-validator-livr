@@ -2,12 +2,14 @@
 
 namespace Validator\LIVR\Rules;
 
-class  Special {
+class Special
+{
 
-    public static function email() {
+    public static function email()
+    {
 
-        return function($value) {
-            if( !isset($value) || $value === '' ) {
+        return function ($value) {
+            if (!isset($value) || $value === '') {
                 return;
             }
 
@@ -16,11 +18,11 @@ class  Special {
             }
 
             $emailReg = '/(?:[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/';
-            if( !preg_match($emailReg, $value) ) {
+            if (!preg_match($emailReg, $value)) {
                 return 'WRONG_EMAIL';
             }
 
-            if ( preg_match('/\@.*\@/', $value ) ){
+            if (preg_match('/\@.*\@/', $value)) {
                 return 'WRONG_EMAIL';
             }
 
@@ -28,10 +30,11 @@ class  Special {
         };
     }
 
-    public static function equalToField($field) {
+    public static function equalToField($field)
+    {
 
-        return function($value, $params) use($field) {
-            if( !isset($value) || $value === '' ) {
+        return function ($value, $params) use ($field) {
+            if (!isset($value) || $value === '') {
                 return;
             }
 
@@ -39,7 +42,7 @@ class  Special {
                 return 'FORMAT_ERROR';
             }
 
-            if( $value != $params[$field] ) {
+            if ($value != $params[$field]) {
                 return 'FIELDS_NOT_EQUAL';
             }
 
@@ -47,9 +50,10 @@ class  Special {
         };
     }
 
-    public static function url() {
-        return function($value) {
-            if( !isset($value) || $value === '' ) {
+    public static function url()
+    {
+        return function ($value) {
+            if (!isset($value) || $value === '') {
                 return;
             }
 
@@ -71,9 +75,10 @@ class  Special {
         };
     }
 
-    public static function isoDate() {
-        return function($value) {
-            if( !isset($value) || $value === '' ) {
+    public static function isoDate()
+    {
+        return function ($value) {
+            if (!isset($value) || $value === '') {
                 return;
             }
 
@@ -86,7 +91,7 @@ class  Special {
             if (preg_match($isoDateReg, $value)) {
                 try {
                     $date = new \DateTime($value);
-                    if( $date->format("Y-m-d") == $value ) {
+                    if ($date->format("Y-m-d") == $value) {
                         return;
                     }
 
@@ -99,5 +104,3 @@ class  Special {
         };
     }
 }
-
-?>

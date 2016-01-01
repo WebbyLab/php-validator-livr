@@ -2,12 +2,14 @@
 
 namespace Validator\LIVR\Rules;
 
-class String {
+class Text
+{
 
-    public static function oneOf() {
+    public static function oneOf()
+    {
         $first_arg = func_get_arg(0);
 
-        if ( is_array($first_arg) && !\Validator\LIVR\Util::isAssocArray($first_arg) ) {
+        if (is_array($first_arg) && !\Validator\LIVR\Util::isAssocArray($first_arg)) {
             $allowedValues = $first_arg;
         } else {
             $allowedValues = func_get_args();
@@ -15,12 +17,12 @@ class String {
         }
 
         $modifiedAllowedValues = array();
-        foreach ( $allowedValues as $v ) {
+        foreach ($allowedValues as $v) {
             $modifiedAllowedValues[] = (string) $v;
         }
 
-        return function($value) use($modifiedAllowedValues) {
-            if ( !isset($value) or $value === '' ) {
+        return function ($value) use ($modifiedAllowedValues) {
+            if (!isset($value) or $value === '') {
                 return;
             }
 
@@ -28,7 +30,7 @@ class String {
                 return 'FORMAT_ERROR';
             }
 
-            if ( ! in_array((string) $value, $modifiedAllowedValues, true) ) {
+            if (! in_array((string) $value, $modifiedAllowedValues, true)) {
                 return 'NOT_ALLOWED_VALUE';
             }
 
@@ -37,10 +39,11 @@ class String {
     }
 
 
-    public static function maxLength($maxLength) {
+    public static function maxLength($maxLength)
+    {
 
-        return function($value) use($maxLength) {
-            if ( !isset($value) or $value === '' ) {
+        return function ($value) use ($maxLength) {
+            if (!isset($value) or $value === '') {
                 return;
             }
 
@@ -48,7 +51,7 @@ class String {
                 return 'FORMAT_ERROR';
             }
 
-            if ( mb_strlen($value, "UTF-8") > $maxLength ) {
+            if (mb_strlen($value, "UTF-8") > $maxLength) {
                 return 'TOO_LONG';
             }
 
@@ -57,10 +60,11 @@ class String {
     }
 
 
-    public static function minLength($minLength) {
+    public static function minLength($minLength)
+    {
 
-        return function($value) use($minLength) {
-            if ( !isset($value) or $value === '' ) {
+        return function ($value) use ($minLength) {
+            if (!isset($value) or $value === '') {
                 return;
             }
 
@@ -68,7 +72,7 @@ class String {
                 return 'FORMAT_ERROR';
             }
 
-            if ( mb_strlen($value, "UTF-8") < $minLength ) {
+            if (mb_strlen($value, "UTF-8") < $minLength) {
                 return 'TOO_SHORT';
             }
 
@@ -77,10 +81,11 @@ class String {
     }
 
 
-    public static function lengthEqual($length) {
+    public static function lengthEqual($length)
+    {
 
-        return function($value) use($length) {
-            if ( !isset($value) or $value === '' ) {
+        return function ($value) use ($length) {
+            if (!isset($value) or $value === '') {
                 return;
             }
 
@@ -88,11 +93,11 @@ class String {
                 return 'FORMAT_ERROR';
             }
 
-            if ( mb_strlen($value, "UTF-8") < $length ) {
+            if (mb_strlen($value, "UTF-8") < $length) {
                 return 'TOO_SHORT';
             }
 
-            if ( mb_strlen($value, "UTF-8") > $length ) {
+            if (mb_strlen($value, "UTF-8") > $length) {
                 return 'TOO_LONG';
             }
 
@@ -100,10 +105,11 @@ class String {
         };
     }
 
-    public static function lengthBetween($minLength, $maxLength) {
+    public static function lengthBetween($minLength, $maxLength)
+    {
 
-        return function($value) use($minLength, $maxLength) {
-            if ( !isset($value) or $value === '' ) {
+        return function ($value) use ($minLength, $maxLength) {
+            if (!isset($value) or $value === '') {
                 return;
             }
 
@@ -111,11 +117,11 @@ class String {
                 return 'FORMAT_ERROR';
             }
 
-            if ( mb_strlen($value, "UTF-8") < $minLength ) {
+            if (mb_strlen($value, "UTF-8") < $minLength) {
                 return 'TOO_SHORT';
             }
 
-            if ( mb_strlen($value, "UTF-8") > $maxLength ) {
+            if (mb_strlen($value, "UTF-8") > $maxLength) {
                 return 'TOO_LONG';
             }
 
@@ -124,21 +130,22 @@ class String {
     }
 
 
-    public static function like($re) {
+    public static function like($re)
+    {
         $re = '/' . $re . '/';
 
-        if( func_num_args() == 3) { #Passed regexp flag
+        if (func_num_args() == 3) { #Passed regexp flag
             $flags = func_get_arg(1);
 
-            if ( $flags && $flags != 'i') {
+            if ($flags && $flags != 'i') {
                 throw new Exception("Only 'i' regexp flag supported, but '" . $flags . "' passed");
             }
 
             $re .= $flags;
         };
 
-        return function($value) use($re) {
-            if ( !isset($value) or $value === '' ) {
+        return function ($value) use ($re) {
+            if (!isset($value) or $value === '') {
                 return;
             }
 
@@ -146,7 +153,7 @@ class String {
                 return 'FORMAT_ERROR';
             }
 
-            if (! preg_match($re, $value) ) {
+            if (! preg_match($re, $value)) {
                 return 'WRONG_FORMAT';
             }
 

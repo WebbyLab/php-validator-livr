@@ -2,53 +2,57 @@
 
 require 'vendor/autoload.php';
 
-class AliasedRulesTest extends PHPUnit_Framework_TestCase {
+class AliasedRulesTest extends PHPUnit_Framework_TestCase
+{
 
     /**
      * @dataProvider positiveTestsProvider
      */
-    public function testPositive($data, $test) {
+    public function testPositive($data, $test)
+    {
         print "Positive test [$test] is run\n";
 
-        $validator  = new Validator\LIVR( $data['rules'] );
+        $validator  = new Validator\LIVR($data['rules']);
         foreach ($data['aliases'] as $alias) {
             $validator->registerAliasedRule($alias);
         }
-        $output     = $validator->validate( $data['input'] );
+        $output = $validator->validate($data['input']);
 
-        $this->assertFalse( $validator->getErrors(), 'Validator should contain no errors' );
+        $this->assertFalse($validator->getErrors(), 'Validator should contain no errors');
 
-        $this->assertEquals( $data['output'], $output, 'Validator should return validated data' );
+        $this->assertEquals($data['output'], $output, 'Validator should return validated data');
     }
 
     /**
      * @dataProvider negativeTestsProvider
      */
-    public function testNegative($data, $test) {
+    public function testNegative($data, $test)
+    {
         print "Negative test [$test] is run\n";
 
-        $validator  = new Validator\LIVR( $data['rules'] );
+        $validator  = new Validator\LIVR($data['rules']);
         foreach ($data['aliases'] as $alias) {
             $validator->registerAliasedRule($alias);
         }
-        $output     = $validator->validate( $data['input'] );
+        $output = $validator->validate($data['input']);
 
         $this->assertFalse($output ? true : false, 'Validator should return false');
 
 
-        $this->assertEquals( $data['errors'], $validator->getErrors(), 'Validator should contain valid errors' );
+        $this->assertEquals($data['errors'], $validator->getErrors(), 'Validator should contain valid errors');
     }
 
-    public function positiveTestsProvider() {
+    public function positiveTestsProvider()
+    {
         $dir = __DIR__ . '/test_suite/aliases_positive';
 
         $pull = array();
 
-        if ( $handle = opendir( $dir ) ) {
+        if ($handle = opendir($dir)) {
             $entries = array();
 
-            while ( false !== ( $entry = readdir($handle) ) ) {
-                if ( $entry != "." && $entry != ".." ) {
+            while (false !== ( $entry = readdir($handle) )) {
+                if ($entry != "." && $entry != "..") {
                     $entries[] = $entry;
 
                 }
@@ -60,9 +64,9 @@ class AliasedRulesTest extends PHPUnit_Framework_TestCase {
 
             foreach ($entries as $entry) {
                 $data = array(
-                    'input'     => json_decode(file_get_contents("$dir/$entry/input.json"),   true),
-                    'rules'     => json_decode(file_get_contents("$dir/$entry/rules.json"),   true),
-                    'output'    => json_decode(file_get_contents("$dir/$entry/output.json"),  true),
+                    'input'     => json_decode(file_get_contents("$dir/$entry/input.json"), true),
+                    'rules'     => json_decode(file_get_contents("$dir/$entry/rules.json"), true),
+                    'output'    => json_decode(file_get_contents("$dir/$entry/output.json"), true),
                     'aliases'   => json_decode(file_get_contents("$dir/$entry/aliases.json"), true),
                 );
                 array_push($pull, array($data, $entry));
@@ -72,17 +76,18 @@ class AliasedRulesTest extends PHPUnit_Framework_TestCase {
         return $pull;
     }
 
-    public function negativeTestsProvider() {
+    public function negativeTestsProvider()
+    {
         $dir = __DIR__ . '/test_suite/aliases_negative';
 
         $pull = array();
 
-        if ( $handle = opendir( $dir ) ) {
+        if ($handle = opendir($dir)) {
 
             $entries = array();
 
-            while ( false !== ( $entry = readdir($handle) ) ) {
-                if ( $entry != "." && $entry != ".." ) {
+            while (false !== ( $entry = readdir($handle) )) {
+                if ($entry != "." && $entry != "..") {
                     $entries[] = $entry;
                 }
             }
@@ -93,9 +98,9 @@ class AliasedRulesTest extends PHPUnit_Framework_TestCase {
 
             foreach ($entries as $entry) {
                 $data = array(
-                    'input'     => json_decode(file_get_contents("$dir/$entry/input.json"),   true),
-                    'rules'     => json_decode(file_get_contents("$dir/$entry/rules.json"),   true),
-                    'errors'    => json_decode(file_get_contents("$dir/$entry/errors.json"),  true),
+                    'input'     => json_decode(file_get_contents("$dir/$entry/input.json"), true),
+                    'rules'     => json_decode(file_get_contents("$dir/$entry/rules.json"), true),
+                    'errors'    => json_decode(file_get_contents("$dir/$entry/errors.json"), true),
                     'aliases'   => json_decode(file_get_contents("$dir/$entry/aliases.json"), true),
                 );
                 array_push($pull, array($data, $entry));
@@ -105,5 +110,3 @@ class AliasedRulesTest extends PHPUnit_Framework_TestCase {
         return $pull;
     }
 }
-
-?>

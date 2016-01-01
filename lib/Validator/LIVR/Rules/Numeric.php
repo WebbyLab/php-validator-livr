@@ -2,20 +2,22 @@
 
 namespace Validator\LIVR\Rules;
 
-class Numeric {
+class Numeric
+{
 
-    public static function integer() {
+    public static function integer()
+    {
 
-        return function($value) {
-            if ( !isset($value) or $value === '' ) {
+        return function ($value) {
+            if (!isset($value) or $value === '') {
                 return;
             }
 
-            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
                 return 'FORMAT_ERROR';
             }
 
-            if ( !is_numeric($value) or !preg_match("/^\-?\d+$/", $value) ) {
+            if (!is_numeric($value) or !preg_match("/^\-?\d+$/", $value)) {
                 return 'NOT_INTEGER';
             }
 
@@ -23,18 +25,19 @@ class Numeric {
         };
     }
 
-    public static function positiveInteger() {
+    public static function positiveInteger()
+    {
 
-        return function($value) {
-            if ( !isset($value) or $value === '' ) {
+        return function ($value) {
+            if (!isset($value) or $value === '') {
                 return;
             }
 
-            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
                 return 'FORMAT_ERROR';
             }
 
-            if ( !is_numeric($value) or !preg_match( "/^\d+$/", $value) || $value <= 0 ) {
+            if (!is_numeric($value) or !preg_match("/^\d+$/", $value) || $value <= 0) {
                 return 'NOT_POSITIVE_INTEGER';
             }
 
@@ -42,18 +45,19 @@ class Numeric {
         };
     }
 
-    public static function decimal() {
+    public static function decimal()
+    {
 
-        return function($value) {
-            if ( !isset($value) or $value === '' ) {
+        return function ($value) {
+            if (!isset($value) or $value === '') {
                 return;
             }
 
-            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
                 return 'FORMAT_ERROR';
             }
 
-            if ( !is_numeric($value) or !preg_match("/^\-?[\d.]+$/", $value) ) {
+            if (!is_numeric($value) or !preg_match("/^\-?[\d.]+$/", $value)) {
                 return 'NOT_DECIMAL';
             }
 
@@ -61,18 +65,19 @@ class Numeric {
         };
     }
 
-    public static function positiveDecimal() {
+    public static function positiveDecimal()
+    {
 
-        return function($value) {
-            if ( !isset($value) or $value === '' ) {
+        return function ($value) {
+            if (!isset($value) or $value === '') {
                 return;
             }
 
-            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
                 return 'FORMAT_ERROR';
             }
 
-            if ( !is_numeric($value) or !preg_match("/^[\d.]+$/", $value) or $value <= 0 ) {
+            if (!is_numeric($value) or !preg_match("/^[\d.]+$/", $value) or $value <= 0) {
                 return 'NOT_POSITIVE_DECIMAL';
             }
 
@@ -80,55 +85,66 @@ class Numeric {
         };
     }
 
-    public static function maxNumber($maxNumer) {
+    public static function maxNumber($maxNumer)
+    {
 
-        return function($value) use ($maxNumer) {
-            if ( !isset($value) or $value === '' ) {
+        return function ($value) use ($maxNumer) {
+            if (!isset($value) or $value === '') {
                 return;
             }
 
-            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
                 return 'FORMAT_ERROR';
             }
 
-            if ( $value > $maxNumer ) return 'TOO_HIGH';
+            if ($value > $maxNumer) {
+                return 'TOO_HIGH';
+            }
 
             return;
         };
     }
 
 
-    public static function minNumber($minNumer) {
+    public static function minNumber($minNumer)
+    {
 
-        return function($value) use ($minNumer) {
-            if ( !isset($value) or $value === '' ) {
+        return function ($value) use ($minNumer) {
+            if (!isset($value) or $value === '') {
                 return;
             }
 
-            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
                 return 'FORMAT_ERROR';
             }
 
-            if ( $value < $minNumer ) return 'TOO_LOW';
+            if ($value < $minNumer) {
+                return 'TOO_LOW';
+            }
 
             return;
         };
     }
 
 
-    public static function numberBetween($minNumer, $maxNumer) {
+    public static function numberBetween($minNumer, $maxNumer)
+    {
 
-        return function($value) use ($minNumer, $maxNumer) {
-            if ( !isset($value) or $value === '' ) {
+        return function ($value) use ($minNumer, $maxNumer) {
+            if (!isset($value) or $value === '') {
                 return;
             };
 
-            if ( !\Validator\LIVR\Util::isStringOrNumber($value) ) {
+            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
                 return 'FORMAT_ERROR';
             }
 
-            if ( $value < $minNumer ) return 'TOO_LOW';
-            if ( $value > $maxNumer ) return 'TOO_HIGH';
+            if ($value < $minNumer) {
+                return 'TOO_LOW';
+            }
+            if ($value > $maxNumer) {
+                return 'TOO_HIGH';
+            }
 
             return;
         };
