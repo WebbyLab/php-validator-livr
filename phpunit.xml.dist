@@ -22,5 +22,8 @@
               <directory>vendor</directory>
               <directory>tests</directory>
         </blacklist>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">lib</directory>
+        </whitelist>
     </filter>
 </phpunit>

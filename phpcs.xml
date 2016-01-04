@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<ruleset name="PHP_CodeSniffer">
+    <description>The coding standard for PRS2.</description>
+    <file>./lib</file>
+    <rule ref="PSR2"/>
+    <rule ref="Generic.Files.LineLength">
+      <properties>
+         <property name="lineLimit" value="500"/>
+      </properties>
+    </rule>
+</ruleset>

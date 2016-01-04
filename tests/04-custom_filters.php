@@ -1,13 +1,16 @@
 <?php
+
 require 'vendor/autoload.php';
 
-class CustomFiltersTest extends PHPUnit_Framework_TestCase {
+class CustomFiltersTest extends PHPUnit_Framework_TestCase
+{
 
-    public function testPositive() {
+    public function testPositive()
+    {
         Validator\LIVR::registerDefaultRules(array(
-            'my_ucfirst' => function() {
-                return function($value, $params, &$outputRef) {
-                    if ( !isset($value) or $value == '' ) {
+            'my_ucfirst' => function () {
+                return function ($value, $params, &$outputRef) {
+                    if (!isset($value) or $value == '') {
                         return;
                     }
 
@@ -15,9 +18,9 @@ class CustomFiltersTest extends PHPUnit_Framework_TestCase {
                     return;
                 };
             },
-            'my_lc' => function() {
-                return function($value, $params, &$outputRef) {
-                    if ( !isset($value) or $value == '' ) {
+            'my_lc' => function () {
+                return function ($value, $params, &$outputRef) {
+                    if (!isset($value) or $value == '') {
                         return;
                     }
 
@@ -25,9 +28,9 @@ class CustomFiltersTest extends PHPUnit_Framework_TestCase {
                     return;
                 };
             },
-            'my_trim' => function() {
-               return function($value, $params, &$outputRef) {
-                    if ( !isset($value) or $value == '' ) {
+            'my_trim' => function () {
+                return function ($value, $params, &$outputRef) {
+                    if (!isset($value) or $value == '') {
                         return;
                     }
 
@@ -56,6 +59,4 @@ class CustomFiltersTest extends PHPUnit_Framework_TestCase {
         ));
 
     }
-
 }
-

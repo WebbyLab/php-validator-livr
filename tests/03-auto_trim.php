@@ -1,7 +1,9 @@
 <?php
+
 require 'vendor/autoload.php';
 
-class AutoTrimTest extends PHPUnit_Framework_TestCase {
+class AutoTrimTest extends PHPUnit_Framework_TestCase
+{
 
     private $rules = array(
         'code'      =>  array('required'),
@@ -12,7 +14,8 @@ class AutoTrimTest extends PHPUnit_Framework_TestCase {
         )
     );
 
-    public function testPositive() {
+    public function testPositive()
+    {
         print "POSITIVE: Validate data with automatic trim\n";
 
         $input = array(
@@ -31,14 +34,15 @@ class AutoTrimTest extends PHPUnit_Framework_TestCase {
             )
         );
 
-        $validator = new Validator\LIVR( $this->rules, true );
-        $cleanData = $validator->validate( $input );
+        $validator = new Validator\LIVR($this->rules, true);
+        $cleanData = $validator->validate($input);
 
         $this->assertEquals($output, $cleanData);
 
     }
 
-    public function testNegative() {
+    public function testNegative()
+    {
         print "NEGATIVE: Validate data with automatic trim\n";
 
         $input = array(
@@ -57,8 +61,8 @@ class AutoTrimTest extends PHPUnit_Framework_TestCase {
             )
         );
 
-        $validator = new Validator\LIVR( $this->rules, true );
-        $output = $validator->validate( $input );
+        $validator = new Validator\LIVR($this->rules, true);
+        $output = $validator->validate($input);
 
         if ($output) {
             throw new \Exception('Should contain error codes');
@@ -69,6 +73,3 @@ class AutoTrimTest extends PHPUnit_Framework_TestCase {
 
     }
 }
-
-
-?>

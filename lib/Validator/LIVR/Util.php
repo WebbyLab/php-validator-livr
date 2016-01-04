@@ -2,18 +2,21 @@
 
 namespace Validator\LIVR;
 
-class Util {
+class Util
+{
 
-    static public function isAssocArray($arr) {
+    public static function isAssocArray($arr)
+    {
 
-        if ( ! is_array($arr) ) {
+        if (! is_array($arr)) {
             return false;
         }
 
         return array_keys($arr) !== range(0, count($arr) - 1);
     }
 
-    static public function isStringOrNumber($value) {
+    public static function isStringOrNumber($value)
+    {
 
         if (is_string($value)) {
             return true;

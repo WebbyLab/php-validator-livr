@@ -2,39 +2,43 @@
 
 namespace Validator\LIVR\Rules;
 
-class Common {
+class Common
+{
 
-    public static function required() {
+    public static function required()
+    {
 
-        return function($value) {
-            if ( !isset($value) or $value === '' ) {
+        return function ($value) {
+            if (!isset($value) or $value === '') {
                 return 'REQUIRED';
             }
         };
     }
 
-    public static function notEmpty() {
+    public static function notEmpty()
+    {
 
-        return function($value) {
-            if ( isset($value) and $value === '' ) {
+        return function ($value) {
+            if (isset($value) and $value === '') {
                 return 'CANNOT_BE_EMPTY';
             }
         };
     }
 
-    public static function notEmptyList() {
+    public static function notEmptyList()
+    {
 
-        return function($list) {
+        return function ($list) {
 
-            if( !isset($list) || $list === '' ) {
+            if (!isset($list) || $list === '') {
                 return 'CANNOT_BE_EMPTY';
             }
 
-            if( !is_array($list) ) {
+            if (!is_array($list)) {
                 return 'WRONG_FORMAT';
             }
 
-            if( count($list) < 1) {
+            if (count($list) < 1) {
                 return 'CANNOT_BE_EMPTY';
             }
 
