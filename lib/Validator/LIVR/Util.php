@@ -17,7 +17,7 @@ class Util
 
     public static function isList($arr) {
         if (!is_array($arr)) return false;
-        if ($arr === []) return true;
+        if ($arr === array()) return true;
         return !self::isAssocArray($arr);
     }
 
