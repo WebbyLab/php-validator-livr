@@ -12,5 +12,7 @@
             "product_id": 30,
             "quantity": 30
         }
-    ]
+    ],
+
+    "empty_list": []
 }
