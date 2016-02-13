@@ -15,6 +15,12 @@ class Util
         return array_keys($arr) !== range(0, count($arr) - 1);
     }
 
+    public static function isList($arr) {
+        if (!is_array($arr)) return false;
+        if ($arr === []) return true;
+        return !self::isAssocArray($arr);
+    }
+
     public static function isStringOrNumber($value)
     {
 

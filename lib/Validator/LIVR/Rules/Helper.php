@@ -94,7 +94,7 @@ class Helper
                 return;
             }
 
-            if (!is_array($objects) || \Validator\LIVR\Util::isAssocArray($objects)) {
+            if (!\Validator\LIVR\Util::isList($objects)) {
                 return 'FORMAT_ERROR';
             }
 
