@@ -29,7 +29,7 @@ class Text
 			array_pop($allowedValues); # pop rule_builders
 		}
 
-		$modifiedAllowedValues = [];
+		$modifiedAllowedValues = array();
 		foreach ($allowedValues as $v)
 		{
 			$modifiedAllowedValues[] = (string)$v;
