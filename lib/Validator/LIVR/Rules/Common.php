@@ -2,6 +2,8 @@
 
 namespace Validator\LIVR\Rules;
 
+use Validator\LIVR\Util;
+
 class Common
 {
 
@@ -40,6 +42,21 @@ class Common
 
             if (count($list) < 1) {
                 return 'CANNOT_BE_EMPTY';
+            }
+
+            return;
+        };
+    }
+
+    public static function anyObject()
+    {
+        return function ($list) {
+            if (!isset($list) || $list === '') {
+                return;
+            }
+
+            if (!is_array($list) || !count($list)) {
+                return 'FORMAT_ERROR';
             }
 
             return;

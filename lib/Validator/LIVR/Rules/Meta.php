@@ -2,12 +2,10 @@
 
 namespace Validator\LIVR\Rules;
 
-class Helper
+class Meta
 {
-
     public static function nestedObject($livr, $ruleBuilders)
     {
-
         $validator = new \Validator\LIVR($livr);
         $validator->registerRules($ruleBuilders)->prepare();
 
@@ -22,7 +20,7 @@ class Helper
 
             $result = $validator->validate($nestedObject);
 
-            if ($result) {
+            if ($result !== false && $result !== null) {
                 $outputArr = $result;
                 return;
             } else {
@@ -70,7 +68,6 @@ class Helper
                     $validatorErrors = $validator->getErrors();
                     $errors[]  = $validatorErrors['field'];
                     $hasErrors = true;
-
                 }
             }
 
@@ -85,7 +82,6 @@ class Helper
 
     public static function listOfObjects($livr, $ruleBuilders)
     {
-
         $validator = new \Validator\LIVR($livr);
         $validator->registerRules($ruleBuilders)->prepare();
 
@@ -105,7 +101,7 @@ class Helper
             foreach ($objects as $object) {
                 $result = $validator->validate($object);
 
-                if ($result) {
+                if ($result !== false && $result !== null) {
                     $errors[] = null;
                     $results[] = $result;
                 } else {
@@ -126,7 +122,6 @@ class Helper
 
     public static function listOfDifferentObjects($selectorField, $livrs, $ruleBuilders)
     {
-
         $validators = array();
 
         foreach ($livrs as $selectorValue => $livr) {
@@ -141,8 +136,10 @@ class Helper
             $hasErrors = false;
 
             foreach ($objects as $object) {
-
-                if (!is_array($object) || !isset($object[$selectorField]) || !$validators[ $object[$selectorField] ]) {
+                if (!is_array($object)
+                    || !isset($object[$selectorField])
+                    || !isset($validators[$object[$selectorField]])
+                    || !$validators[$object[$selectorField]]) {
                     $errors[] = 'FORMAT_ERROR';
                     continue;
                 }
@@ -165,6 +162,81 @@ class Helper
             } else {
                 $outputArr = $results;
                 return;
+            }
+        };
+    }
+
+    public static function variableObject($selectorField, $livrs, $ruleBuilders)
+    {
+        $validators = array();
+        foreach ($livrs as $selectorValue => $livr) {
+            $validator = new \Validator\LIVR($livr);
+            $validator->registerRules($ruleBuilders)->prepare();
+            $validators[$selectorValue] = $validator;
+        }
+
+        return function ($object, $params, &$outputArr) use ($validators, $selectorField) {
+            if (!isset($object) || $object === '') {
+                return '';
+            }
+
+            if (!is_array($object)
+                || !isset($object[$selectorField])
+                || !isset($validators[$object[$selectorField]])) {
+                return 'FORMAT_ERROR';
+            }
+
+            $validator = $validators[ $object[$selectorField] ];
+            $result = $validator->validate($object);
+
+            if ($result !== false && $result !== null) {
+                $outputArr = $result;
+                return;
+            } else {
+                return $validator->getErrors();
+            }
+        };
+    }
+
+    public static function or()
+    {
+        $first_arg = func_get_arg(0);
+
+        if (is_array($first_arg) && !\Validator\LIVR\Util::isAssocArray($first_arg)) {
+            $livrs        = func_get_arg(0);
+            $ruleBuilders = func_get_arg(1);
+        } else {
+            $livrs        = func_get_args();
+            $ruleBuilders = array_pop($livrs);
+        }
+
+        $validators = array();
+
+        foreach ($livrs as $livr) {
+            $validator = new \Validator\LIVR(['field' => $livr]);
+            $validator->registerRules($ruleBuilders)->prepare();
+            $validators[] = $validator;
+        }
+
+        return function ($value, $params, &$outputArr) use ($validators) {
+            if (!isset($value) || $value === '') {
+                return;
+            }
+
+            $lastError = null;
+            foreach ($validators as $validator) {
+                $result = $validator->validate(['field' => $value]);
+
+                if ($result !== false && $result !== null) {
+                    $outputArr = $result['field'];
+                    return;
+                } else {
+                    $lastError = $validator->getErrors()['field'];
+                }
+            }
+
+            if ($lastError) {
+                return $lastError;
             }
         };
     }

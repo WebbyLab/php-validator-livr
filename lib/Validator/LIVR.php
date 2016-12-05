@@ -4,57 +4,62 @@ namespace Validator;
 
 class LIVR
 {
-
     /**
      * Current version
      *
      * @var string
      */
-    const VERSION = '1.1.0';
+    const VERSION = '2.0.0';
 
-    private $isPrepared = false;
-    private $livrRules  = array();
-    private $validators = array();
+    private $isPrepared        = false;
+    private $livrRules         = array();
+    private $validators        = array();
     private $validatorBuilders = array();
-    private $errors     = false;
-    private $isAutoTrim = false;
+    private $errors            = false;
+    private $isAutoTrim        = false;
 
     private static $IS_DEFAULT_AUTO_TRIM = 0;
     private static $DEFAULT_RULES = array(
-        'required'          => 'Validator\LIVR\Rules\Common::required',
-        'not_empty'         => 'Validator\LIVR\Rules\Common::notEmpty',
-        'not_empty_list'    => 'Validator\LIVR\Rules\Common::notEmptyList',
+        'required'                  => 'Validator\LIVR\Rules\Common::required',
+        'not_empty'                 => 'Validator\LIVR\Rules\Common::notEmpty',
+        'not_empty_list'            => 'Validator\LIVR\Rules\Common::notEmptyList',
+        'any_object'                => 'Validator\LIVR\Rules\Common::anyObject',
 
-        'one_of'            => 'Validator\LIVR\Rules\Text::oneOf',
-        'min_length'        => 'Validator\LIVR\Rules\Text::minLength',
-        'max_length'        => 'Validator\LIVR\Rules\Text::maxLength',
-        'length_equal'      => 'Validator\LIVR\Rules\Text::lengthEqual',
-        'length_between'    => 'Validator\LIVR\Rules\Text::lengthBetween',
-        'like'              => 'Validator\LIVR\Rules\Text::like',
+        'one_of'                    => 'Validator\LIVR\Rules\Text::oneOf',
+        'eq'                        => 'Validator\LIVR\Rules\Text::eq',
+        'string'                    => 'Validator\LIVR\Rules\Text::string',
+        'min_length'                => 'Validator\LIVR\Rules\Text::minLength',
+        'max_length'                => 'Validator\LIVR\Rules\Text::maxLength',
+        'length_equal'              => 'Validator\LIVR\Rules\Text::lengthEqual',
+        'length_between'            => 'Validator\LIVR\Rules\Text::lengthBetween',
+        'like'                      => 'Validator\LIVR\Rules\Text::like',
 
-        'integer'           => 'Validator\LIVR\Rules\Numeric::integer',
-        'positive_integer'  => 'Validator\LIVR\Rules\Numeric::positiveInteger',
-        'decimal'           => 'Validator\LIVR\Rules\Numeric::decimal',
-        'positive_decimal'  => 'Validator\LIVR\Rules\Numeric::positiveDecimal',
-        'min_number'        => 'Validator\LIVR\Rules\Numeric::minNumber',
-        'max_number'        => 'Validator\LIVR\Rules\Numeric::maxNumber',
-        'number_between'    => 'Validator\LIVR\Rules\Numeric::numberBetween',
+        'integer'                   => 'Validator\LIVR\Rules\Numeric::integer',
+        'positive_integer'          => 'Validator\LIVR\Rules\Numeric::positiveInteger',
+        'decimal'                   => 'Validator\LIVR\Rules\Numeric::decimal',
+        'positive_decimal'          => 'Validator\LIVR\Rules\Numeric::positiveDecimal',
+        'min_number'                => 'Validator\LIVR\Rules\Numeric::minNumber',
+        'max_number'                => 'Validator\LIVR\Rules\Numeric::maxNumber',
+        'number_between'            => 'Validator\LIVR\Rules\Numeric::numberBetween',
 
-        'email'             => 'Validator\LIVR\Rules\Special::email',
-        'equal_to_field'    => 'Validator\LIVR\Rules\Special::equalToField',
-        'url'               => 'Validator\LIVR\Rules\Special::url',
-        'iso_date'          => 'Validator\LIVR\Rules\Special::isoDate',
+        'email'                     => 'Validator\LIVR\Rules\Special::email',
+        'equal_to_field'            => 'Validator\LIVR\Rules\Special::equalToField',
+        'url'                       => 'Validator\LIVR\Rules\Special::url',
+        'iso_date'                  => 'Validator\LIVR\Rules\Special::isoDate',
 
-        'nested_object'     => 'Validator\LIVR\Rules\Helper::nestedObject',
-        'list_of'           => 'Validator\LIVR\Rules\Helper::listOf',
-        'list_of_objects'   => 'Validator\LIVR\Rules\Helper::listOfObjects',
-        'list_of_different_objects' => 'Validator\LIVR\Rules\Helper::listOfDifferentObjects',
+        'nested_object'             => 'Validator\LIVR\Rules\Meta::nestedObject',
+        'list_of'                   => 'Validator\LIVR\Rules\Meta::listOf',
+        'list_of_objects'           => 'Validator\LIVR\Rules\Meta::listOfObjects',
+        'list_of_different_objects' => 'Validator\LIVR\Rules\Meta::listOfDifferentObjects',
+        'variable_object'           => 'Validator\LIVR\Rules\Meta::variableObject',
+        'or'                        => 'Validator\LIVR\Rules\Meta::or',
 
-        'trim'              => 'Validator\LIVR\Rules\Filters::trim',
-        'to_lc'             => 'Validator\LIVR\Rules\Filters::toLc',
-        'to_uc'             => 'Validator\LIVR\Rules\Filters::toUc',
-        'remove'            => 'Validator\LIVR\Rules\Filters::remove',
-        'leave_only'        => 'Validator\LIVR\Rules\Filters::leaveOnly',
+        'default'                   => 'Validator\LIVR\Rules\Modifiers::defaultVal',
+        'trim'                      => 'Validator\LIVR\Rules\Modifiers::trim',
+        'to_lc'                     => 'Validator\LIVR\Rules\Modifiers::toLc',
+        'to_uc'                     => 'Validator\LIVR\Rules\Modifiers::toUc',
+        'remove'                    => 'Validator\LIVR\Rules\Modifiers::remove',
+        'leave_only'                => 'Validator\LIVR\Rules\Modifiers::leaveOnly',
     );
 
 
@@ -124,11 +129,11 @@ class LIVR
 
     public function validate($data)
     {
-        if (! $this->isPrepared) {
+        if (!$this->isPrepared) {
             $this->prepare();
         }
 
-        if (! \Validator\LIVR\Util::isAssocArray($data)) {
+        if (!\Validator\LIVR\Util::isAssocArray($data)) {
             $this->errors = 'FORMAT_ERROR';
             return;
         }
@@ -141,7 +146,6 @@ class LIVR
         $result = array();
 
         foreach ($this->validators as $fieldName => $validators) {
-
             if (count($validators) == 0) {
                 continue;
             }
@@ -165,11 +169,12 @@ class LIVR
                     $isOk = false;
 
                     break;
-                } elseif (array_key_exists($fieldName, $data)) {
+                } elseif ($fieldResult !== null) {
                     $result[$fieldName] = $fieldResult;
+                } elseif (array_key_exists($fieldName, $data)) {
+                    $result[$fieldName] = $value;
                 }
             }
-
         }
 
         if (count($errors) > 0) {
@@ -272,7 +277,6 @@ class LIVR
     {
         if (is_string($data)) {
             return trim($data);
-
         } elseif (\Validator\LIVR\Util::isAssocArray($data)) {
             $trimmedData = array();
             foreach ($data as $key => $value) {

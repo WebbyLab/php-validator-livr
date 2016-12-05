@@ -7,7 +7,6 @@ class Special
 
     public static function email()
     {
-
         return function ($value) {
             if (!isset($value) || $value === '') {
                 return;
@@ -17,12 +16,7 @@ class Special
                 return 'FORMAT_ERROR';
             }
 
-            $emailReg = '/(?:[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/i';
-            if (!preg_match($emailReg, $value)) {
-                return 'WRONG_EMAIL';
-            }
-
-            if (preg_match('/\@.*\@/', $value)) {
+            if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
                 return 'WRONG_EMAIL';
             }
 
@@ -32,7 +26,6 @@ class Special
 
     public static function equalToField($field)
     {
-
         return function ($value, $params) use ($field) {
             if (!isset($value) || $value === '') {
                 return;
@@ -67,7 +60,7 @@ class Special
                 return "WRONG_URL";
             }
 
-            if (!filter_var(mb_strtolower($value), FILTER_VALIDATE_URL)) {
+            if (!filter_var($value, FILTER_VALIDATE_URL)) {
                 return 'WRONG_URL';
             }
 
@@ -94,7 +87,6 @@ class Special
                     if ($date->format("Y-m-d") == $value) {
                         return;
                     }
-
                 } catch (\Exception $e) {
                     return "WRONG_DATE";
                 }
