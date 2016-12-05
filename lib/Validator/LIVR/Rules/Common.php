@@ -55,7 +55,7 @@ class Common
                 return;
             }
 
-            if (!is_array($list) || !count($list)) {
+            if (!Util::isAssocArray($list)) {
                 return 'FORMAT_ERROR';
             }
 
