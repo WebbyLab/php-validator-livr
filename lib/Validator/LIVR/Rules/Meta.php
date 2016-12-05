@@ -198,7 +198,7 @@ class Meta
         };
     }
 
-    public static function or()
+    public static function __or()
     {
         $first_arg = func_get_arg(0);
 
@@ -213,7 +213,7 @@ class Meta
         $validators = array();
 
         foreach ($livrs as $livr) {
-            $validator = new \Validator\LIVR(['field' => $livr]);
+            $validator = new \Validator\LIVR(array('field' => $livr));
             $validator->registerRules($ruleBuilders)->prepare();
             $validators[] = $validator;
         }
@@ -225,13 +225,14 @@ class Meta
 
             $lastError = null;
             foreach ($validators as $validator) {
-                $result = $validator->validate(['field' => $value]);
+                $result = $validator->validate(array('field' => $value));
 
                 if ($result !== false && $result !== null) {
                     $outputArr = $result['field'];
                     return;
                 } else {
-                    $lastError = $validator->getErrors()['field'];
+                    $errors = $validator->getErrors();
+                    $lastError = $errors['field'];
                 }
             }
 

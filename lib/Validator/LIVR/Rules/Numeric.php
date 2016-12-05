@@ -34,7 +34,13 @@ class Numeric
                 return 'FORMAT_ERROR';
             }
 
-            if (!filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])) {
+            $opts = array(
+                'options' => array(
+                    'min_range' => 1
+                )
+            );
+
+            if (!filter_var($value, FILTER_VALIDATE_INT, $opts)) {
                 return 'NOT_POSITIVE_INTEGER';
             }
 

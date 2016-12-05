@@ -52,7 +52,7 @@ class LIVR
         'list_of_objects'           => 'Validator\LIVR\Rules\Meta::listOfObjects',
         'list_of_different_objects' => 'Validator\LIVR\Rules\Meta::listOfDifferentObjects',
         'variable_object'           => 'Validator\LIVR\Rules\Meta::variableObject',
-        'or'                        => 'Validator\LIVR\Rules\Meta::or',
+        'or'                        => 'Validator\LIVR\Rules\Meta::__or',
 
         'default'                   => 'Validator\LIVR\Rules\Modifiers::defaultVal',
         'trim'                      => 'Validator\LIVR\Rules\Modifiers::trim',
