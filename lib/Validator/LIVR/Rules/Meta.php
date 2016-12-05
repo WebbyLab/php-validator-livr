@@ -198,7 +198,7 @@ class Meta
         };
     }
 
-    public static function or()
+    public static function __or()
     {
         $first_arg = func_get_arg(0);
 
