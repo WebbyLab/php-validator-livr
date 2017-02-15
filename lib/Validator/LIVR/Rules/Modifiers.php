@@ -2,12 +2,19 @@
 
 namespace Validator\LIVR\Rules;
 
-class Filters
+class Modifiers
 {
+    public static function defaultVal($defaultValue)
+    {
+        return function ($value, $params, &$outputArr) use ($defaultValue) {
+            if (!isset($value) || $value === '') {
+                $outputArr = $defaultValue;
+            }
+        };
+    }
 
     public static function trim()
     {
-
         return function ($value, $undef, &$outputArr) {
             if (!isset($value) || $value === '') {
                 return;
@@ -28,7 +35,6 @@ class Filters
 
     public static function toLc()
     {
-
         return function ($value, $undef, &$outputArr) {
             if (!isset($value) || $value === '') {
                 return;
@@ -53,7 +59,6 @@ class Filters
 
     public static function toUc()
     {
-
         return function ($value, $undef, &$outputArr) {
             if (!isset($value) || $value === '') {
                 return;
@@ -86,7 +91,6 @@ class Filters
 
             return;
         };
-
     }
 
     public static function leaveOnly($chars)
@@ -100,6 +104,5 @@ class Filters
 
             return;
         };
-
     }
 }

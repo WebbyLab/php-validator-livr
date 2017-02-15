@@ -4,7 +4,6 @@ namespace Validator\LIVR\Rules;
 
 class Text
 {
-
     public static function oneOf()
     {
         $first_arg = func_get_arg(0);
@@ -26,7 +25,7 @@ class Text
                 return;
             }
 
-            if (!\Validator\LIVR\Util::isStringOrNumber($value)) {
+            if (!\Validator\LIVR\Util::isStringOrNumber($value) && !is_bool($value)) {
                 return 'FORMAT_ERROR';
             }
 
@@ -38,6 +37,39 @@ class Text
         };
     }
 
+    public static function eq($allowedValue)
+    {
+        return function ($value, $params) use ($allowedValue) {
+            if (!isset($value) || $value === '') {
+                return;
+            }
+
+            if (!\Validator\LIVR\Util::isStringOrNumber($value) && !is_bool($value)) {
+                return 'FORMAT_ERROR';
+            }
+
+            if ((string)$value === (string)$allowedValue) {
+                return;
+            }
+
+            return 'NOT_ALLOWED_VALUE';
+        };
+    }
+
+    public static function string()
+    {
+        return function ($value, $params) {
+            if (!isset($value) || $value === '') {
+                return;
+            }
+
+            if (!\Validator\LIVR\Util::isStringOrNumber($value) && !is_bool($value)) {
+                return 'FORMAT_ERROR';
+            }
+
+            return;
+        };
+    }
 
     public static function maxLength($maxLength)
     {

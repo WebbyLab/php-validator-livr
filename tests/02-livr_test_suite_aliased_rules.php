@@ -4,7 +4,6 @@ require 'vendor/autoload.php';
 
 class AliasedRulesTest extends PHPUnit_Framework_TestCase
 {
-
     /**
      * @dataProvider positiveTestsProvider
      */
@@ -54,7 +53,6 @@ class AliasedRulesTest extends PHPUnit_Framework_TestCase
             while (false !== ( $entry = readdir($handle) )) {
                 if ($entry != "." && $entry != "..") {
                     $entries[] = $entry;
-
                 }
             }
 
@@ -83,7 +81,6 @@ class AliasedRulesTest extends PHPUnit_Framework_TestCase
         $pull = array();
 
         if ($handle = opendir($dir)) {
-
             $entries = array();
 
             while (false !== ( $entry = readdir($handle) )) {

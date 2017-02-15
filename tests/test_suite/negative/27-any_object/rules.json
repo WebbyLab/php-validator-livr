@@ -1,0 +1,5 @@
+{
+    "value_is_string":      "any_object",
+    "value_is_number":      "any_object",
+    "value_is_array":       "any_object"
+}

@@ -4,7 +4,6 @@ require 'vendor/autoload.php';
 
 class AutoTrimTest extends PHPUnit_Framework_TestCase
 {
-
     private $rules = array(
         'code'      =>  array('required'),
         'password'  =>  array('required', array( 'min_length' => 3 ) ),
@@ -38,7 +37,6 @@ class AutoTrimTest extends PHPUnit_Framework_TestCase
         $cleanData = $validator->validate($input);
 
         $this->assertEquals($output, $cleanData);
-
     }
 
     public function testNegative()
@@ -69,7 +67,5 @@ class AutoTrimTest extends PHPUnit_Framework_TestCase
         }
 
         $this->assertEquals($expectedErrors, $validator->getErrors());
-
-
     }
 }

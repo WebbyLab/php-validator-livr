@@ -1,13 +1,10 @@
 {
     "city1": "Moscow",
     "city2": "Kiev",
-    "city3": "3",
-    "city4": 4,
-    "city5": "5",
-    "city6": 6,
-    "city7": "0",
-    "city8": 0,
-    "city9": "Kiev",
+    "city3": "Kiev",
+    "number1": 2,
+    "number2": 2,
+    "boolean": true,
     "empty_city": "",
     "extra_city": "New York"
 }

@@ -4,7 +4,6 @@ require 'vendor/autoload.php';
 
 class CustomFiltersTest extends PHPUnit_Framework_TestCase
 {
-
     public function testPositive()
     {
         Validator\LIVR::registerDefaultRules(array(
@@ -57,6 +56,5 @@ class CustomFiltersTest extends PHPUnit_Framework_TestCase
             'word2' => 'wordtwo',
             'word3' => 'WordThree '
         ));
-
     }
 }
