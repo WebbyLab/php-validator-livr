@@ -200,10 +200,11 @@ See [rules-aliasing](https://github.com/koorchik/LIVR#rules-aliasing) in LIVR sp
 returns array containing all ruleBuilders for the validator. You can register new rule or update existing one with "registerRules" method.
 
 # AUTHORS
- * koorchik (Viktor Turskyi)
- * wanderer (Danil Greben)
  * antonfin (Anton Morozov)
  * k0stik (Konstantin Dvornik)
+ * k33nice (Alexandr Krykovliuk)
+ * koorchik (Viktor Turskyi)
+ * wanderer (Danil Greben)
 
 # BUGS
 Please report any bugs or feature requests to Github https://github.com/WebbyLab/php-validator-livr
