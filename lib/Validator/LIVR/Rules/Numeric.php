@@ -59,7 +59,7 @@ class Numeric
                 return 'FORMAT_ERROR';
             }
 
-            if (!filter_var($value, FILTER_VALIDATE_FLOAT)) {
+            if (filter_var($value, FILTER_VALIDATE_FLOAT) === false) {
                 return 'NOT_DECIMAL';
             }
 
