@@ -2,6 +2,9 @@
     "number1": "10.12",
     "number2": 0.55,
     "number3": -1.10,
+    "number4": "0.00",
+    "number5": 0.00,
+    "number6": 0,
     "empty_field": "",
     "extra_field": "100"
 }
