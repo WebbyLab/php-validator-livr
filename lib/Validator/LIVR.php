@@ -11,15 +11,15 @@ class LIVR
      */
     const VERSION = '2.0.0';
 
-    private $isPrepared        = false;
-    private $livrRules         = array();
-    private $validators        = array();
-    private $validatorBuilders = array();
-    private $errors            = false;
-    private $isAutoTrim        = false;
+    protected $isPrepared        = false;
+    protected $livrRules         = array();
+    protected $validators        = array();
+    protected $validatorBuilders = array();
+    protected $errors            = false;
+    protected $isAutoTrim        = false;
 
-    private static $IS_DEFAULT_AUTO_TRIM = 0;
-    private static $DEFAULT_RULES = array(
+    protected static $IS_DEFAULT_AUTO_TRIM = 0;
+    protected static $DEFAULT_RULES = array(
         'required'                  => 'Validator\LIVR\Rules\Common::required',
         'not_empty'                 => 'Validator\LIVR\Rules\Common::notEmpty',
         'not_empty_list'            => 'Validator\LIVR\Rules\Common::notEmptyList',
@@ -127,7 +127,7 @@ class LIVR
     }
 
 
-    public function validate($data)
+    public function validate($data, $context = null)
     {
         if (!$this->isPrepared) {
             $this->prepare();
@@ -161,7 +161,8 @@ class LIVR
                 $errCode = $vCb(
                     ( array_key_exists($fieldName, $result) ? $result[$fieldName] : $value ),
                     $data,
-                    $fieldResult
+                    $fieldResult,
+                    $context
                 );
 
                 if ($errCode) {
@@ -214,7 +215,7 @@ class LIVR
         return $this->validatorBuilders;
     }
 
-    private function parseRule($livrRule)
+    protected function parseRule($livrRule)
     {
         if (\Validator\LIVR\Util::isAssocArray($livrRule)) {
             reset($livrRule);
@@ -234,7 +235,7 @@ class LIVR
     }
 
 
-    private function buildValidator($name, $args)
+    protected function buildValidator($name, $args)
     {
         if (!array_key_exists($name, $this->validatorBuilders)) {
             throw new \Exception("Rule [$name] not registered");
@@ -246,7 +247,7 @@ class LIVR
         return call_user_func_array($this->validatorBuilders[$name], $funcArgs);
     }
 
-    private static function buildAliasedRule($alias)
+    protected static function buildAliasedRule($alias)
     {
         if (!$alias['name']) {
             throw new \Exception("Alias name required");
@@ -259,8 +260,8 @@ class LIVR
             $validator = new \Validator\LIVR(array('value' => $alias['rules']));
             $validator->registerRules($ruleBuilders)->prepare();
 
-            return function ($value, $params, &$outputArr) use ($validator, $alias) {
-                $result = $validator->validate(array('value' => $value));
+            return function ($value, $params, &$outputArr, $context = null) use ($validator, $alias) {
+                $result = $validator->validate(array('value' => $value), $context);
 
                 if ($result) {
                     $outputArr = $result['value'];
@@ -273,7 +274,7 @@ class LIVR
         };
     }
 
-    private function autoTrim($data)
+    protected function autoTrim($data)
     {
         if (is_string($data)) {
             return trim($data);

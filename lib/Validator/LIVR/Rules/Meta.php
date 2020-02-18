@@ -9,7 +9,7 @@ class Meta
         $validator = new \Validator\LIVR($livr);
         $validator->registerRules($ruleBuilders)->prepare();
 
-        return function ($nestedObject, $params, &$outputArr) use ($validator) {
+        return function ($nestedObject, $params, &$outputArr, $context = null) use ($validator) {
             if (!isset($nestedObject) || $nestedObject === '') {
                 return;
             }
@@ -18,7 +18,7 @@ class Meta
                 return 'FORMAT_ERROR';
             }
 
-            $result = $validator->validate($nestedObject);
+            $result = $validator->validate($nestedObject, $context);
 
             if ($result !== false && $result !== null) {
                 $outputArr = $result;
@@ -44,7 +44,7 @@ class Meta
         $validator = new \Validator\LIVR(array('field' => $livr));
         $validator->registerRules($ruleBuilders)->prepare();
 
-        return function ($values, $params, &$outputArr) use ($validator) {
+        return function ($values, $params, &$outputArr, $context = null) use ($validator) {
             if (!isset($values) || $values === '') {
                 return;
             }
@@ -58,7 +58,7 @@ class Meta
             $hasErrors = false;
 
             foreach ($values as $value) {
-                $result = $validator->validate(array('field' => $value));
+                $result = $validator->validate(array('field' => $value), $context);
 
                 if ($result) {
                     $results[] = $result['field'];
@@ -85,7 +85,7 @@ class Meta
         $validator = new \Validator\LIVR($livr);
         $validator->registerRules($ruleBuilders)->prepare();
 
-        return function ($objects, $params, &$outputArr) use ($validator) {
+        return function ($objects, $params, &$outputArr, $context = null) use ($validator) {
             if (!isset($objects) || $objects ==='') {
                 return;
             }
@@ -99,7 +99,7 @@ class Meta
             $hasErrors = false;
 
             foreach ($objects as $object) {
-                $result = $validator->validate($object);
+                $result = $validator->validate($object, $context);
 
                 if ($result !== false && $result !== null) {
                     $errors[] = null;
@@ -130,7 +130,7 @@ class Meta
             $validators[$selectorValue] = $validator;
         }
 
-        return function ($objects, $params, &$outputArr) use ($validators, $selectorField) {
+        return function ($objects, $params, &$outputArr, $context = null) use ($validators, $selectorField) {
             $results   = array();
             $errors    = array();
             $hasErrors = false;
@@ -145,7 +145,7 @@ class Meta
                 }
 
                 $validator = $validators[ $object[$selectorField] ];
-                $result = $validator->validate($object);
+                $result = $validator->validate($object, $context);
 
                 if ($result) {
                     $results[] = $result;
@@ -175,7 +175,7 @@ class Meta
             $validators[$selectorValue] = $validator;
         }
 
-        return function ($object, $params, &$outputArr) use ($validators, $selectorField) {
+        return function ($object, $params, &$outputArr, $context = null) use ($validators, $selectorField) {
             if (!isset($object) || $object === '') {
                 return '';
             }
@@ -187,7 +187,7 @@ class Meta
             }
 
             $validator = $validators[ $object[$selectorField] ];
-            $result = $validator->validate($object);
+            $result = $validator->validate($object, $context);
 
             if ($result !== false && $result !== null) {
                 $outputArr = $result;
@@ -218,14 +218,14 @@ class Meta
             $validators[] = $validator;
         }
 
-        return function ($value, $params, &$outputArr) use ($validators) {
+        return function ($value, $params, &$outputArr, $context = null) use ($validators) {
             if (!isset($value) || $value === '') {
                 return;
             }
 
             $lastError = null;
             foreach ($validators as $validator) {
-                $result = $validator->validate(array('field' => $value));
+                $result = $validator->validate(array('field' => $value), $context);
 
                 if ($result !== false && $result !== null) {
                     $outputArr = $result['field'];
