@@ -170,7 +170,7 @@ class Text
             $flags = func_get_arg(1);
 
             if ($flags && $flags != 'i') {
-                throw new Exception("Only 'i' regexp flag supported, but '" . $flags . "' passed");
+                throw new \Exception("Only 'i' regexp flag supported, but '" . $flags . "' passed");
             }
 
             $re .= $flags;

@@ -153,7 +153,6 @@ class LIVR
             $value = isset($data[$fieldName]) ? $data[$fieldName] : null;
 
             $isOk = true;
-            $fieldResult;
 
             foreach ($validators as $vCb) {
                 $fieldResult = array_key_exists($fieldName, $result) ? $result[$fieldName] : $value;

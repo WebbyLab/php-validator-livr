@@ -2,7 +2,9 @@
 
 require 'vendor/autoload.php';
 
-class CustomFiltersTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class CustomFiltersTest extends TestCase
 {
     public function testPositive()
     {
