@@ -82,16 +82,14 @@ class Special
                 return 'FORMAT_ERROR';
             }
 
-            $isoDateReg = '/^(\d{4})-(\d{2})-(\d{2})$/';
+            // checkdate() instead of DateTime, which is several times slower.
+            // \z, not $: "$" also matches before a trailing newline
+            if (preg_match('/^(\d{4})-(\d{2})-(\d{2})\z/', $value, $matches)) {
+                // checkdate() starts with year 1. Year 0 is a leap year, like 2000.
+                $year = (int) $matches[1] ?: 2000;
 
-            if (preg_match($isoDateReg, $value)) {
-                try {
-                    $date = new \DateTime($value);
-                    if ($date->format("Y-m-d") == $value) {
-                        return;
-                    }
-                } catch (\Exception $e) {
-                    return "WRONG_DATE";
+                if (checkdate((int) $matches[2], (int) $matches[3], $year)) {
+                    return;
                 }
             }
 

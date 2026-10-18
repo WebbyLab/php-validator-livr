@@ -19,6 +19,8 @@ class LIVR
     private $isAutoTrim        = false;
 
     private static $IS_DEFAULT_AUTO_TRIM = 0;
+    private static $BUILDER_CLOSURES = array(); // rule builders given as strings => closures
+
     private static $DEFAULT_RULES = array(
         'required'                  => 'Validator\LIVR\Rules\Common::required',
         'not_empty'                 => 'Validator\LIVR\Rules\Common::notEmpty',
@@ -99,7 +101,7 @@ class LIVR
         }
 
         $this->livrRules = $livrRules;
-        $this->registerRules(self::$DEFAULT_RULES);
+        $this->validatorBuilders = self::$DEFAULT_RULES;
     }
 
     public function prepare()
@@ -119,7 +121,7 @@ class LIVR
             foreach ($fieldRules as $rule) {
                 list($name, $args) = $this->parseRule($rule);
 
-                array_push($validators, $this->buildValidator($name, $args));
+                $validators[] = $this->buildValidator($name, $args);
             }
 
             $this->validators[$field] = $validators;
@@ -148,33 +150,34 @@ class LIVR
         $result = array();
 
         foreach ($this->validators as $fieldName => $validators) {
-            if (count($validators) == 0) {
-                continue;
-            }
-
             $value = isset($data[$fieldName]) ? $data[$fieldName] : null;
 
-            $isOk = true;
+            // The output of the previous rules, the same as $result[$fieldName]
+            $hasOutput = false;
+            $output    = null;
 
             foreach ($validators as $vCb) {
-                $fieldResult = array_key_exists($fieldName, $result) ? $result[$fieldName] : $value;
+                $input       = $hasOutput ? $output : $value;
+                $fieldResult = $input;
 
-                $errCode = $vCb(
-                    ( array_key_exists($fieldName, $result) ? $result[$fieldName] : $value ),
-                    $data,
-                    $fieldResult
-                );
+                $errCode = $vCb($input, $data, $fieldResult);
 
                 if ($errCode) {
                     $errors[$fieldName] = $errCode;
-                    $isOk = false;
+                    $hasOutput = false;
 
                     break;
                 } elseif ($fieldResult !== null) {
-                    $result[$fieldName] = $fieldResult;
+                    $hasOutput = true;
+                    $output    = $fieldResult;
                 } elseif (array_key_exists($fieldName, $data)) {
-                    $result[$fieldName] = $value;
+                    $hasOutput = true;
+                    $output    = $value;
                 }
+            }
+
+            if ($hasOutput) {
+                $result[$fieldName] = $output;
             }
         }
 
@@ -195,8 +198,10 @@ class LIVR
 
     public function registerRules($rules)
     {
-
-        $this->validatorBuilders = array_merge($this->validatorBuilders, $rules);
+        // Meta rules register the rules of their validator, usually the same as these ones
+        if ($rules !== $this->validatorBuilders) {
+            $this->validatorBuilders = array_merge($this->validatorBuilders, $rules);
+        }
 
         return $this;
     }
@@ -215,13 +220,63 @@ class LIVR
         return $this->validatorBuilders;
     }
 
+    /**
+     * Returns the rules of the field as one rule: function ($value, $allValues, &$output),
+     * which returns an error code. It runs the rules like validate() does for the field:
+     * in order, each rule gets the output of the previous one. $output gets the output
+     * of the rules, or null if the field has no rules.
+     *
+     * Meta rules use it to validate many values without the arrays that validate() makes.
+     */
+    public function getFieldRule($fieldName)
+    {
+        if (!$this->isPrepared) {
+            $this->prepare();
+        }
+
+        $validators = isset($this->validators[$fieldName]) ? $this->validators[$fieldName] : array();
+
+        return function ($value, $allValues, &$output) use ($validators) {
+            // A field without rules is not in the output of validate()
+            if (!$validators) {
+                $output = null;
+                return null;
+            }
+
+            if ($this->isAutoTrim) {
+                $value     = $this->autoTrim($value);
+                $allValues = $this->autoTrim($allValues);
+            }
+
+            $output = $value;
+
+            foreach ($validators as $vCb) {
+                $input       = $output;
+                $fieldResult = $input;
+
+                $errCode = $vCb($input, $allValues, $fieldResult);
+
+                if ($errCode) {
+                    return $errCode;
+                }
+
+                // Like in validate(), where the field is in the data
+                $output = $fieldResult !== null ? $fieldResult : $value;
+            }
+
+            return null;
+        };
+    }
+
     private function parseRule($livrRule)
     {
         if (\Validator\LIVR\Util::isAssocArray($livrRule)) {
-            reset($livrRule);
-            $name = key($livrRule);
-
-            $args = $livrRule[$name];
+            // The first key and value, without reset(), which copies the array
+            $name = null;
+            $args = null;
+            foreach ($livrRule as $name => $args) {
+                break;
+            }
 
             if (!is_array($args) || \Validator\LIVR\Util::isAssocArray($args)) {
                 $args = array($args);
@@ -241,10 +296,20 @@ class LIVR
             throw new \Exception("Rule [$name] not registered");
         }
 
-        $funcArgs = $args;
-        array_push($funcArgs, $this->validatorBuilders);
+        $builder = $this->validatorBuilders[$name];
 
-        return call_user_func_array($this->validatorBuilders[$name], $funcArgs);
+        // A "Class::method" string is resolved on every call, a closure is not
+        if (is_string($builder)) {
+            if (!isset(self::$BUILDER_CLOSURES[$builder])) {
+                self::$BUILDER_CLOSURES[$builder] = \Closure::fromCallable($builder);
+            }
+
+            $builder = self::$BUILDER_CLOSURES[$builder];
+        }
+
+        $args[] = $this->validatorBuilders;
+
+        return $builder(...$args);
     }
 
     private static function buildAliasedRule($alias)
@@ -258,18 +323,19 @@ class LIVR
 
         return function ($ruleBuilders) use ($alias) {
             $validator = new \Validator\LIVR(array('value' => $alias['rules']));
-            $validator->registerRules($ruleBuilders)->prepare();
+            $validateValue = $validator->registerRules($ruleBuilders)->getFieldRule('value');
+            $aliasError = isset($alias['error']) ? $alias['error'] : null;
 
-            return function ($value, $params, &$outputArr) use ($validator, $alias) {
-                $result = $validator->validate(array('value' => $value));
+            return function ($value, $params, &$outputArr) use ($validateValue, $aliasError) {
+                $output  = null;
+                $errCode = $validateValue($value, array('value' => $value), $output);
 
-                if ($result) {
-                    $outputArr = $result['value'];
-                    return;
-                } else {
-                    $errors = $validator->getErrors();
-                    return isset($alias['error']) ? $alias['error'] : $errors['value'];
+                if ($errCode) {
+                    return $aliasError !== null ? $aliasError : $errCode;
                 }
+
+                $outputArr = $output;
+                return;
             };
         };
     }

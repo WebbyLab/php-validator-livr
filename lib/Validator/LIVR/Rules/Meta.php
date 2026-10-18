@@ -42,9 +42,9 @@ class Meta
         }
 
         $validator = new \Validator\LIVR(array('field' => $livr));
-        $validator->registerRules($ruleBuilders)->prepare();
+        $validateItem = $validator->registerRules($ruleBuilders)->getFieldRule('field');
 
-        return function ($values, $params, &$outputArr) use ($validator) {
+        return function ($values, $params, &$outputArr) use ($validateItem) {
             if (!isset($values) || $values === '') {
                 return;
             }
@@ -58,17 +58,17 @@ class Meta
             $hasErrors = false;
 
             foreach ($values as $value) {
-                $result = $validator->validate(array('field' => $value));
+                // Rules of an item see it as the only field of the data, like in validate()
+                $output  = null;
+                $errCode = $validateItem($value, array('field' => $value), $output);
 
-                // The result is empty without rules
-                if ($result !== false && $result !== null) {
-                    $results[] = isset($result['field']) ? $result['field'] : null;
-                    $errors[]  = null;
-                } else {
+                if ($errCode) {
                     $results[] = null;
-                    $validatorErrors = $validator->getErrors();
-                    $errors[]  = $validatorErrors['field'];
+                    $errors[]  = $errCode;
                     $hasErrors = true;
+                } else {
+                    $results[] = $output;
+                    $errors[]  = null;
                 }
             }
 
@@ -212,27 +212,28 @@ class Meta
         $livrs        = func_get_args();
         $ruleBuilders = array_pop($livrs);
 
-        $validators = array();
+        $fieldRules = array();
 
         foreach ($livrs as $livr) {
             $validator = new \Validator\LIVR(array('field' => $livr));
-            $validator->registerRules($ruleBuilders)->prepare();
-            $validators[] = $validator;
+            $fieldRules[] = $validator->registerRules($ruleBuilders)->getFieldRule('field');
         }
 
-        return function ($value, $params, &$outputArr) use ($validators) {
+        return function ($value, $params, &$outputArr) use ($fieldRules) {
             // Empty values go to the rule sets too, so "required" and "not_empty" in them work
             $lastError = null;
-            foreach ($validators as $validator) {
-                $result = $validator->validate(array('field' => $value));
+            $allValues = array('field' => $value);
 
-                if ($result !== false && $result !== null) {
-                    $outputArr = $result['field'];
+            foreach ($fieldRules as $fieldRule) {
+                $output  = null;
+                $errCode = $fieldRule($value, $allValues, $output);
+
+                if (!$errCode) {
+                    $outputArr = $output;
                     return;
-                } else {
-                    $errors = $validator->getErrors();
-                    $lastError = $errors['field'];
                 }
+
+                $lastError = $errCode;
             }
 
             if ($lastError) {

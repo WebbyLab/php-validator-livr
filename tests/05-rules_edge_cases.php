@@ -51,6 +51,50 @@ class RulesEdgeCasesTest extends TestCase
         }
     }
 
+    public function testGetFieldRule()
+    {
+        $validator = new Validator\LIVR(array(
+            'name'     => array('required', 'trim', 'to_uc'),
+            'no_rules' => array(),
+        ));
+
+        $nameRule = $validator->getFieldRule('name');
+
+        $output = null;
+        $this->assertNull($nameRule(' ab ', array('name' => ' ab '), $output), 'Should return no error');
+        $this->assertSame('AB', $output, 'Should return the output of the last rule');
+
+        $this->assertSame('REQUIRED', $nameRule('', array('name' => ''), $output), 'Should return the error');
+
+        $noRules = $validator->getFieldRule('no_rules');
+        $this->assertNull($noRules('x', array('no_rules' => 'x'), $output), 'Should return no error');
+        $this->assertNull($output, 'Should return no output for a field without rules');
+
+        // The example from the README
+        $validator = new Validator\LIVR(array('tags' => array('my_list_of' => array(array('required', 'to_lc')))));
+        $validator->registerRules(array('my_list_of' => function ($rules, $ruleBuilders) {
+            $validator = new Validator\LIVR(array('item' => $rules));
+            $validateItem = $validator->registerRules($ruleBuilders)->getFieldRule('item');
+
+            return function ($values, $params, &$outputArr) use ($validateItem) {
+                $output = array();
+                foreach ($values as $value) {
+                    $itemOutput = null;
+                    $errorCode = $validateItem($value, array('item' => $value), $itemOutput);
+                    if ($errorCode) {
+                        return $errorCode;
+                    }
+                    $output[] = $itemOutput;
+                }
+                $outputArr = $output;
+            };
+        }));
+
+        $this->assertEquals(array('tags' => array('a', 'b')), $validator->validate(array('tags' => array('A', 'B'))));
+        $this->assertFalse($validator->validate(array('tags' => array('A', ''))), 'Should return false');
+        $this->assertEquals(array('tags' => 'REQUIRED'), $validator->getErrors(), 'Should return the item error');
+    }
+
     public function testEmptyListsOfRules()
     {
         $validator = new Validator\LIVR(array(
