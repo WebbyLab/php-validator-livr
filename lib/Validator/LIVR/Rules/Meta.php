@@ -33,7 +33,7 @@ class Meta
     {
         $first_arg = func_get_arg(0);
 
-        if (is_array($first_arg) && !\Validator\LIVR\Util::isAssocArray($first_arg)) {
+        if (\Validator\LIVR\Util::isList($first_arg)) {
             $livr         = func_get_arg(0);
             $ruleBuilders = func_get_arg(1);
         } else {
@@ -60,8 +60,9 @@ class Meta
             foreach ($values as $value) {
                 $result = $validator->validate(array('field' => $value));
 
-                if ($result) {
-                    $results[] = $result['field'];
+                // The result is empty without rules
+                if ($result !== false && $result !== null) {
+                    $results[] = isset($result['field']) ? $result['field'] : null;
                     $errors[]  = null;
                 } else {
                     $results[] = null;

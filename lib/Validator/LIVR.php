@@ -65,7 +65,8 @@ class LIVR
 
     public static function registerDefaultRules($rules)
     {
-        self::$DEFAULT_RULES = self::$DEFAULT_RULES + $rules;
+        // Rules with the names of registered ones replace them
+        self::$DEFAULT_RULES = array_merge(self::$DEFAULT_RULES, $rules);
         return;
     }
 
@@ -108,7 +109,8 @@ class LIVR
         }
 
         foreach ($this->livrRules as $field => $fieldRules) {
-            if (!is_array($fieldRules) || \Validator\LIVR\Util::isAssocArray($fieldRules)) {
+            // An empty array is an empty list of rules
+            if (!is_array($fieldRules) || !\Validator\LIVR\Util::isList($fieldRules)) {
                 $fieldRules = array($fieldRules);
             }
 
@@ -276,7 +278,8 @@ class LIVR
     {
         if (is_string($data)) {
             return trim($data);
-        } elseif (\Validator\LIVR\Util::isAssocArray($data)) {
+        } elseif (is_array($data)) {
+            // Objects and lists
             $trimmedData = array();
             foreach ($data as $key => $value) {
                 $trimmedData[$key]  = $this->autoTrim($value);
