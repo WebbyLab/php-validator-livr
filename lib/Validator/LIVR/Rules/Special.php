@@ -35,7 +35,10 @@ class Special
                 return 'FORMAT_ERROR';
             }
 
-            if ($value != $params[$field]) {
+            // Compared as strings: "==" finds numeric strings like "10" and "1e1" equal
+            $fieldValue = isset($params[$field]) ? $params[$field] : null;
+
+            if (!\Validator\LIVR\Util::isStringOrNumber($fieldValue) || (string) $value !== (string) $fieldValue) {
                 return 'FIELDS_NOT_EQUAL';
             }
 

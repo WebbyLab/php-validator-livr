@@ -10,6 +10,7 @@
             <file>tests/02-livr_test_suite_aliased_rules.php</file>
             <file>tests/03-auto_trim.php</file>
             <file>tests/04-custom_filters.php</file>
+            <file>tests/05-rules_edge_cases.php</file>
         </testsuite>
     </testsuites>
 
