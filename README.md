@@ -199,6 +199,33 @@ See [rules-aliasing](https://github.com/koorchik/LIVR#rules-aliasing) in LIVR sp
 ## $validator->getRules()
 returns array containing all ruleBuilders for the validator. You can register new rule or update existing one with "registerRules" method.
 
+## $validator->getFieldRule($fieldName)
+returns all rules of the field as one rule: `function ($value, $allValues, &$output)`, which returns an error code. It runs the rules like "validate" does for the field: in order, each rule gets the output of the previous one. `$output` gets the output of the rules, or null if the field has no rules.
+
+Use it in meta rules that validate many values with the same rules: it skips the result and errors arrays that "validate" makes for every call. Built-in "list\_of" and "or" work this way.
+
+```php
+    Validator\LIVR::registerDefaultRules([ 'my_list_of' => function ($rules, $ruleBuilders) {
+        $validator = new Validator\LIVR([ 'item' => $rules ]);
+        $validateItem = $validator->registerRules($ruleBuilders)->getFieldRule('item');
+
+        return function ($values, $params, &$outputArr) use ($validateItem) {
+            $output = [];
+            foreach ($values as $value) {
+                $itemOutput = null;
+                $errorCode = $validateItem($value, [ 'item' => $value ], $itemOutput);
+                if ($errorCode) {
+                    return $errorCode;
+                }
+                $output[] = $itemOutput;
+            }
+            $outputArr = $output;
+        };
+    } ]);
+
+    $validator = new Validator\LIVR([ 'tags' => [ 'my_list_of' => [ [ 'required', 'to_lc' ] ] ] ]);
+```
+
 # AUTHORS
  * antonfin (Anton Morozov)
  * k0stik (Konstantin Dvornik)

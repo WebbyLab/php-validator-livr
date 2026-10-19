@@ -15,12 +15,13 @@ class Text
             array_pop($allowedValues); # pop rule_builders
         }
 
-        $modifiedAllowedValues = array();
+        // The allowed values as keys: isset() does not go through the whole list like in_array()
+        $allowedValuesSet = array();
         foreach ($allowedValues as $v) {
-            $modifiedAllowedValues[] = (string) $v;
+            $allowedValuesSet[(string) $v] = true;
         }
 
-        return function ($value) use ($modifiedAllowedValues) {
+        return function ($value) use ($allowedValuesSet) {
             if (!isset($value) or $value === '') {
                 return;
             }
@@ -29,7 +30,7 @@ class Text
                 return 'FORMAT_ERROR';
             }
 
-            if (! in_array((string) $value, $modifiedAllowedValues, true)) {
+            if (!isset($allowedValuesSet[(string) $value])) {
                 return 'NOT_ALLOWED_VALUE';
             }
 
