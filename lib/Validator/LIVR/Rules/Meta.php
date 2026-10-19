@@ -33,7 +33,7 @@ class Meta
     {
         $first_arg = func_get_arg(0);
 
-        if (is_array($first_arg) && !\Validator\LIVR\Util::isAssocArray($first_arg)) {
+        if (\Validator\LIVR\Util::isList($first_arg)) {
             $livr         = func_get_arg(0);
             $ruleBuilders = func_get_arg(1);
         } else {
@@ -60,8 +60,9 @@ class Meta
             foreach ($values as $value) {
                 $result = $validator->validate(array('field' => $value));
 
-                if ($result) {
-                    $results[] = $result['field'];
+                // The result is empty without rules
+                if ($result !== false && $result !== null) {
+                    $results[] = isset($result['field']) ? $result['field'] : null;
                     $errors[]  = null;
                 } else {
                     $results[] = null;
@@ -131,20 +132,27 @@ class Meta
         }
 
         return function ($objects, $params, &$outputArr) use ($validators, $selectorField) {
+            if (!isset($objects) || $objects === '') {
+                return;
+            }
+
+            if (!\Validator\LIVR\Util::isList($objects)) {
+                return 'FORMAT_ERROR';
+            }
+
             $results   = array();
             $errors    = array();
             $hasErrors = false;
 
             foreach ($objects as $object) {
-                if (!is_array($object)
-                    || !isset($object[$selectorField])
-                    || !isset($validators[$object[$selectorField]])
-                    || !$validators[$object[$selectorField]]) {
-                    $errors[] = 'FORMAT_ERROR';
+                $validator = self::selectValidator($validators, $object, $selectorField);
+
+                if (!$validator) {
+                    $errors[]  = 'FORMAT_ERROR';
+                    $hasErrors = true;
                     continue;
                 }
 
-                $validator = $validators[ $object[$selectorField] ];
                 $result = $validator->validate($object);
 
                 if ($result) {
@@ -180,13 +188,12 @@ class Meta
                 return '';
             }
 
-            if (!is_array($object)
-                || !isset($object[$selectorField])
-                || !isset($validators[$object[$selectorField]])) {
+            $validator = self::selectValidator($validators, $object, $selectorField);
+
+            if (!$validator) {
                 return 'FORMAT_ERROR';
             }
 
-            $validator = $validators[ $object[$selectorField] ];
             $result = $validator->validate($object);
 
             if ($result !== false && $result !== null) {
@@ -200,15 +207,10 @@ class Meta
 
     public static function __or()
     {
-        $first_arg = func_get_arg(0);
-
-        if (is_array($first_arg) && !\Validator\LIVR\Util::isAssocArray($first_arg)) {
-            $livrs        = func_get_arg(0);
-            $ruleBuilders = func_get_arg(1);
-        } else {
-            $livrs        = func_get_args();
-            $ruleBuilders = array_pop($livrs);
-        }
+        // Each argument is a set of rules. Unlike list_of, a list in the first argument
+        // is not unwrapped, as a set of rules can be a list: { or: [['email', 'to_lc'], 'positive_integer'] }
+        $livrs        = func_get_args();
+        $ruleBuilders = array_pop($livrs);
 
         $validators = array();
 
@@ -219,10 +221,7 @@ class Meta
         }
 
         return function ($value, $params, &$outputArr) use ($validators) {
-            if (!isset($value) || $value === '') {
-                return;
-            }
-
+            // Empty values go to the rule sets too, so "required" and "not_empty" in them work
             $lastError = null;
             foreach ($validators as $validator) {
                 $result = $validator->validate(array('field' => $value));
@@ -240,5 +239,24 @@ class Meta
                 return $lastError;
             }
         };
+    }
+
+    /**
+     * Returns the validator for the selector value of the object,
+     * or null if the object or its selector value is wrong
+     */
+    private static function selectValidator($validators, $object, $selectorField)
+    {
+        if (!is_array($object) || !isset($object[$selectorField])) {
+            return null;
+        }
+
+        // Only strings and integers can be array keys
+        $selectorValue = $object[$selectorField];
+        if (!is_string($selectorValue) && !is_int($selectorValue)) {
+            return null;
+        }
+
+        return isset($validators[$selectorValue]) ? $validators[$selectorValue] : null;
     }
 }

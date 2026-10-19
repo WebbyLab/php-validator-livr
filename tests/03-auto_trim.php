@@ -9,6 +9,7 @@ class AutoTrimTest extends TestCase
     private $rules = array(
         'code'      =>  array('required'),
         'password'  =>  array('required', array( 'min_length' => 3 ) ),
+        'list'      =>  array('list_of' => array('string')),
         'address'   =>  array('nested_object' => array(
                             'street' => array( array( 'min_length'=> 5 ) )
                         )
@@ -22,6 +23,7 @@ class AutoTrimTest extends TestCase
         $input = array(
             'code'      => ' A ',
             'password'  => ' 123 ',
+            'list'      => array(' aaa ', ' bbb '),
             'address'   => array(
                 'street' => ' hello '
             )
@@ -30,6 +32,7 @@ class AutoTrimTest extends TestCase
         $output = array(
             'code'      => 'A',
             'password'  => '123',
+            'list'      => array('aaa', 'bbb'),
             'address'   => array(
                 'street' => 'hello'
             )
