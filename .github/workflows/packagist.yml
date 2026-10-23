@@ -1,0 +1,33 @@
+name: Packagist
+
+# Packagist only learns about new commits and tags right away from a hook; without one it
+# crawls the repository about once a week, so `composer require validator/livr` keeps
+# installing old code. This workflow tells Packagist about every push to master and every tag.
+#
+# Needs two repository secrets: PACKAGIST_USERNAME, a maintainer of validator/livr on
+# packagist.org, and PACKAGIST_TOKEN, their safe API token from https://packagist.org/profile/.
+
+on:
+  push:
+    branches: [ master ]
+    tags: [ '*' ]
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update the package on Packagist
+        env:
+          PACKAGIST_USERNAME: ${{ secrets.PACKAGIST_USERNAME }}
+          PACKAGIST_TOKEN: ${{ secrets.PACKAGIST_TOKEN }}
+          REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}
+        run: |
+          if [ -z "$PACKAGIST_USERNAME" ] || [ -z "$PACKAGIST_TOKEN" ]; then
+            echo "::warning::PACKAGIST_USERNAME and PACKAGIST_TOKEN are not set, so Packagist only sees this push on its weekly crawl"
+            exit 0
+          fi
+          curl -fsS --retry 3 -X POST https://packagist.org/api/update-package \
+            -H 'content-type: application/json' \
+            -H "authorization: Bearer $PACKAGIST_USERNAME:$PACKAGIST_TOKEN" \
+            -d "{\"repository\":\"$REPOSITORY_URL\"}"
