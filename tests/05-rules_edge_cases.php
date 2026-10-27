@@ -64,4 +64,23 @@ class RulesEdgeCasesTest extends TestCase
             'Should skip fields without rules'
         );
     }
+
+    public function testLikeMatchesTheEndOfTheValue()
+    {
+        $validator = new Validator\LIVR(array(
+            'zip1' => array('like' => '^[0-9]{5}$'),
+            'zip2' => array('like' => array('^[0-9]{5}$', 'i')),
+            'zip3' => array('like' => '^[0-9]{5}$'),
+        ));
+
+        $this->assertFalse(
+            $validator->validate(array('zip1' => "12345\n", 'zip2' => "12345\n", 'zip3' => '12345')),
+            'Should return false'
+        );
+        $this->assertEquals(
+            array('zip1' => 'WRONG_FORMAT', 'zip2' => 'WRONG_FORMAT'),
+            $validator->getErrors(),
+            'Should not match $ before a trailing newline'
+        );
+    }
 }
