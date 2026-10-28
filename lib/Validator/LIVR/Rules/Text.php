@@ -165,7 +165,8 @@ class Text
 
     public static function like($re)
     {
-        $re = '/' . $re . '/';
+        // D: $ matches only at the end of the value, as in JavaScript, not before a trailing newline
+        $re = '/' . $re . '/D';
 
         if (func_num_args() == 3) { #Passed regexp flag
             $flags = func_get_arg(1);
