@@ -243,9 +243,9 @@ class LIVR
                 return null;
             }
 
+            // $allValues come from the caller as they are, usually already trimmed data
             if ($this->isAutoTrim) {
-                $value     = $this->autoTrim($value);
-                $allValues = $this->autoTrim($allValues);
+                $value = $this->autoTrim($value);
             }
 
             $output = $value;
@@ -326,9 +326,10 @@ class LIVR
             $validateValue = $validator->registerRules($ruleBuilders)->getFieldRule('value');
             $aliasError = isset($alias['error']) ? $alias['error'] : null;
 
+            // Aliases are transparent: their rules see the siblings of the field that uses the alias
             return function ($value, $params, &$outputArr) use ($validateValue, $aliasError) {
                 $output  = null;
-                $errCode = $validateValue($value, array('value' => $value), $output);
+                $errCode = $validateValue($value, $params, $output);
 
                 if ($errCode) {
                     return $aliasError !== null ? $aliasError : $errCode;

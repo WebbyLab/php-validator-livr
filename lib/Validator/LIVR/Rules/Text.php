@@ -15,10 +15,16 @@ class Text
             array_pop($allowedValues); # pop rule_builders
         }
 
-        // The allowed values as keys: isset() does not go through the whole list like in_array()
+        // The allowed values as keys: isset() does not go through the whole list like in_array().
+        // Booleans are compared as strings (LIVR 2.5, 2.3): true is "true". As in LIVR 2.0, it is
+        // also "1", the PHP string form of true (and false is ""), so the values that passed still pass
         $allowedValuesSet = array();
         foreach ($allowedValues as $v) {
             $allowedValuesSet[(string) $v] = true;
+
+            if (is_bool($v)) {
+                $allowedValuesSet[$v ? 'true' : 'false'] = true;
+            }
         }
 
         return function ($value) use ($allowedValuesSet) {
@@ -30,17 +36,27 @@ class Text
                 return 'FORMAT_ERROR';
             }
 
-            if (!isset($allowedValuesSet[(string) $value])) {
-                return 'NOT_ALLOWED_VALUE';
+            if (isset($allowedValuesSet[(string) $value])) {
+                return;
             }
 
-            return;
+            if (is_bool($value) && isset($allowedValuesSet[$value ? 'true' : 'false'])) {
+                return;
+            }
+
+            return 'NOT_ALLOWED_VALUE';
         };
     }
 
     public static function eq($allowedValue)
     {
-        return function ($value, $params) use ($allowedValue) {
+        // Booleans are compared as strings (LIVR 2.5, 2.3): {"eq": true} accepts true and "true",
+        // and {"eq": "true"} accepts true. As in LIVR 2.0, the PHP string forms are compared too
+        // (true is "1", false is ""), so {"eq": true} still accepts "1" and 1, and {"eq": "1"} true
+        $allowedString     = is_array($allowedValue) ? null : (string) $allowedValue;
+        $allowedBoolString = is_bool($allowedValue) ? ($allowedValue ? 'true' : 'false') : null;
+
+        return function ($value, $params) use ($allowedString, $allowedBoolString) {
             if (!isset($value) || $value === '') {
                 return;
             }
@@ -49,7 +65,13 @@ class Text
                 return 'FORMAT_ERROR';
             }
 
-            if ((string)$value === (string)$allowedValue) {
+            $string = (string) $value;
+
+            if ($string === $allowedString || $string === $allowedBoolString) {
+                return;
+            }
+
+            if (is_bool($value) && ($value ? 'true' : 'false') === $allowedString) {
                 return;
             }
 
@@ -168,7 +190,7 @@ class Text
         // D: $ matches only at the end of the value, as in JavaScript, not before a trailing newline
         $re = '/' . $re . '/D';
 
-        if (func_num_args() == 3) { #Passed regexp flag
+        if (func_num_args() >= 3) { #Passed regexp flag, extra arguments are ignored
             $flags = func_get_arg(1);
 
             if ($flags && $flags != 'i') {

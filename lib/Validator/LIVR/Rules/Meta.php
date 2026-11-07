@@ -6,6 +6,9 @@ class Meta
 {
     public static function nestedObject($livr, $ruleBuilders)
     {
+        // The rule builders are the last argument: extra arguments are ignored, as in LIVR 2.0
+        $ruleBuilders = func_get_arg(func_num_args() - 1);
+
         $validator = new \Validator\LIVR($livr);
         $validator->registerRules($ruleBuilders)->prepare();
 
@@ -34,8 +37,9 @@ class Meta
         $first_arg = func_get_arg(0);
 
         if (\Validator\LIVR\Util::isList($first_arg)) {
+            // The rule builders are the last argument: extra arguments are ignored
             $livr         = func_get_arg(0);
-            $ruleBuilders = func_get_arg(1);
+            $ruleBuilders = func_get_arg(func_num_args() - 1);
         } else {
             $livr         = func_get_args();
             $ruleBuilders = array_pop($livr);
@@ -58,9 +62,9 @@ class Meta
             $hasErrors = false;
 
             foreach ($values as $value) {
-                // Rules of an item see it as the only field of the data, like in validate()
+                // Items have no containing object: a reference in their rules is a missing value
                 $output  = null;
-                $errCode = $validateItem($value, array('field' => $value), $output);
+                $errCode = $validateItem($value, array(), $output);
 
                 if ($errCode) {
                     $results[] = null;
@@ -83,6 +87,9 @@ class Meta
 
     public static function listOfObjects($livr, $ruleBuilders)
     {
+        // The rule builders are the last argument: extra arguments are ignored, as in LIVR 2.0
+        $ruleBuilders = func_get_arg(func_num_args() - 1);
+
         $validator = new \Validator\LIVR($livr);
         $validator->registerRules($ruleBuilders)->prepare();
 
@@ -123,6 +130,9 @@ class Meta
 
     public static function listOfDifferentObjects($selectorField, $livrs, $ruleBuilders)
     {
+        // The rule builders are the last argument: extra arguments are ignored, as in LIVR 2.0
+        $ruleBuilders = func_get_arg(func_num_args() - 1);
+
         $validators = array();
 
         foreach ($livrs as $selectorValue => $livr) {
@@ -176,6 +186,9 @@ class Meta
 
     public static function variableObject($selectorField, $livrs, $ruleBuilders)
     {
+        // The rule builders are the last argument: extra arguments are ignored, as in LIVR 2.0
+        $ruleBuilders = func_get_arg(func_num_args() - 1);
+
         $validators = array();
         foreach ($livrs as $selectorValue => $livr) {
             $validator = new \Validator\LIVR($livr);
@@ -220,13 +233,13 @@ class Meta
         }
 
         return function ($value, $params, &$outputArr) use ($fieldRules) {
-            // Empty values go to the rule sets too, so "required" and "not_empty" in them work
+            // Empty values go to the rule sets too, so "required" and "not_empty" in them work.
+            // The rule sets are transparent: their rules see the siblings of the field
             $lastError = null;
-            $allValues = array('field' => $value);
 
             foreach ($fieldRules as $fieldRule) {
                 $output  = null;
-                $errCode = $fieldRule($value, $allValues, $output);
+                $errCode = $fieldRule($value, $params, $output);
 
                 if (!$errCode) {
                     $outputArr = $output;
