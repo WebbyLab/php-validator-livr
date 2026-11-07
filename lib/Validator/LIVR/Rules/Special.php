@@ -71,15 +71,29 @@ class Special
         };
     }
 
-    public static function isoDate()
+    public static function isoDate($options = null)
     {
+        // The LIVR 2.0 forms get only ruleBuilders, or null for {"iso_date": null}. LIVR 2.5: the
+        // first argument, if any, must be an options object, the arguments after it are ignored.
+        // {} (or [], PHP decodes both to the same array) and null are the same as no arguments
+        if (func_num_args() > 1 && $options !== null) {
+            if (!is_array($options) || ($options && !\Validator\LIVR\Util::isAssocArray($options))) {
+                throw new \Exception('LIVR: "iso_date" takes no arguments or an object with "min" and "max"');
+            }
+
+            if ($options) {
+                return \Validator\LIVR\Rules\Dates::isoDateWithBounds($options);
+            }
+        }
+
         return function ($value) {
             if (!isset($value) || $value === '') {
                 return;
             }
 
+            // A number or a boolean is a primitive value, never a date (LIVR 2.5, 3.3)
             if (!is_string($value)) {
-                return 'FORMAT_ERROR';
+                return \Validator\LIVR\Values::isPrimitiveValue($value) ? 'WRONG_DATE' : 'FORMAT_ERROR';
             }
 
             // checkdate() instead of DateTime, which is several times slower.

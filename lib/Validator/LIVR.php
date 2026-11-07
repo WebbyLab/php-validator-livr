@@ -64,6 +64,51 @@ class LIVR
         'leave_only'                => 'Validator\LIVR\Rules\Modifiers::leaveOnly',
     );
 
+    // The rules of LIVR 2.5. They are looked up after the rules of a validator, so a
+    // registered rule with the same name replaces them, and validators copy and merge only the
+    // rules above: meta rules and aliases merge the rules of a validator into every nested one
+    private static $RULES_2_5 = array(
+        'boolean'                   => 'Validator\LIVR\Rules\Types::boolean',
+        'any'                       => 'Validator\LIVR\Rules\Types::any',
+        'not_one_of'                => 'Validator\LIVR\Rules\Types::notOneOf',
+        'max_decimals'              => 'Validator\LIVR\Rules\Types::maxDecimals',
+
+        'digits'                    => 'Validator\LIVR\Rules\Strings::digits',
+        'starts_with'               => 'Validator\LIVR\Rules\Strings::startsWith',
+        'ends_with'                 => 'Validator\LIVR\Rules\Strings::endsWith',
+        'contains'                  => 'Validator\LIVR\Rules\Strings::contains',
+
+        'iso_datetime'              => 'Validator\LIVR\Rules\Dates::isoDatetime',
+        'iso_time'                  => 'Validator\LIVR\Rules\Dates::isoTime',
+
+        'required_if'               => 'Validator\LIVR\Rules\Conditional::requiredIf',
+        'when'                      => 'Validator\LIVR\Rules\Conditional::when',
+
+        'values'                    => 'Validator\LIVR\Rules\Collections::values',
+        'keys'                      => 'Validator\LIVR\Rules\Collections::keys',
+        'list_length'               => 'Validator\LIVR\Rules\Collections::listLength',
+        'unique'                    => 'Validator\LIVR\Rules\Collections::unique',
+        'split'                     => 'Validator\LIVR\Rules\Collections::split',
+
+        'uuid'                      => 'Validator\LIVR\Rules\Format::uuid',
+        'ip'                        => 'Validator\LIVR\Rules\Format::ip',
+        'cidr'                      => 'Validator\LIVR\Rules\Format::cidr',
+        'hostname'                  => 'Validator\LIVR\Rules\Format::hostname',
+        'base64'                    => 'Validator\LIVR\Rules\Format::base64',
+        'hex'                       => 'Validator\LIVR\Rules\Format::hex',
+        'digest'                    => 'Validator\LIVR\Rules\Format::digest',
+        'mongo_id'                  => 'Validator\LIVR\Rules\Format::mongoId',
+        'hex_color'                 => 'Validator\LIVR\Rules\Format::hexColor',
+        'mac'                       => 'Validator\LIVR\Rules\Format::mac',
+        'e164'                      => 'Validator\LIVR\Rules\Format::e164',
+        'semver'                    => 'Validator\LIVR\Rules\Format::semver',
+        'jwt'                       => 'Validator\LIVR\Rules\Format::jwt',
+
+        'luhn'                      => 'Validator\LIVR\Rules\Checksum::luhn',
+        'credit_card'               => 'Validator\LIVR\Rules\Checksum::creditCard',
+        'iban'                      => 'Validator\LIVR\Rules\Checksum::iban',
+    );
+
 
     public static function registerDefaultRules($rules)
     {
@@ -84,7 +129,7 @@ class LIVR
 
     public static function getDefaultRules()
     {
-        return self::$DEFAULT_RULES;
+        return self::$DEFAULT_RULES + self::$RULES_2_5;
     }
 
     public static function defaultAutoTrim($isAutoTrim)
@@ -92,16 +137,22 @@ class LIVR
         self::$IS_DEFAULT_AUTO_TRIM = !!$isAutoTrim;
     }
 
-    public function __construct($livrRules, $isAutoTrim = false)
+    /**
+     * $options is the auto trim flag, or an array of options: 'autoTrim' => bool, defaultAutoTrim()
+     * when not given. Unlike the flag, array('autoTrim' => false) turns auto trim off when it is
+     * the default
+     */
+    public function __construct($livrRules, $options = false)
     {
-        if ($isAutoTrim) {
-            $this->isAutoTrim = $isAutoTrim;
-        } else {
-            $this->isAutoTrim = self::$IS_DEFAULT_AUTO_TRIM;
-        }
-
         $this->livrRules = $livrRules;
         $this->validatorBuilders = self::$DEFAULT_RULES;
+
+        if (!is_array($options)) {
+            $this->isAutoTrim = $options ? $options : self::$IS_DEFAULT_AUTO_TRIM;
+            return;
+        }
+
+        $this->isAutoTrim = isset($options['autoTrim']) ? !!$options['autoTrim'] : self::$IS_DEFAULT_AUTO_TRIM;
     }
 
     public function prepare()
@@ -217,7 +268,7 @@ class LIVR
 
     public function getRules()
     {
-        return $this->validatorBuilders;
+        return $this->validatorBuilders + self::$RULES_2_5;
     }
 
     /**
@@ -292,11 +343,13 @@ class LIVR
 
     private function buildValidator($name, $args)
     {
-        if (!array_key_exists($name, $this->validatorBuilders)) {
+        if (array_key_exists($name, $this->validatorBuilders)) {
+            $builder = $this->validatorBuilders[$name];
+        } elseif (isset(self::$RULES_2_5[$name])) {
+            $builder = self::$RULES_2_5[$name];
+        } else {
             throw new \Exception("Rule [$name] not registered");
         }
-
-        $builder = $this->validatorBuilders[$name];
 
         // A "Class::method" string is resolved on every call, a closure is not
         if (is_string($builder)) {
