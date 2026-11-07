@@ -72,6 +72,31 @@ Features:
  * Rules are be able to change results output ("trim", "nested\_object", for example)
  * Multipurpose (user input validation, configs validation, contracts programming etc)
 
+# LIVR 2.5
+
+LIVR 2.5 is supported. It adds new rules to LIVR 2.0, and every LIVR 2.0 schema keeps working, except for the small fixes of LIVR 2.0 rules below. See the [specification](https://github.com/koorchik/LIVR/blob/master/drafts/v2.5.md), the [changes](https://livr-spec.org/changes.html#v2-5) and the [rules](https://livr-spec.org/validation-rules.html).
+
+Rules added in LIVR 2.5:
+
+ * types and numbers: "boolean", "not\_one\_of", "max\_decimals"
+ * strings: "digits", "starts\_with", "ends\_with", "contains"
+ * dates and times: "iso\_date" with "min" and "max", "iso\_datetime", "iso\_time"
+ * presence and metarules: "required\_if", "when", "values", "keys", "any"
+ * lists and modifiers: "list\_length", "unique", "split"
+ * formats: "uuid", "ip", "cidr", "hostname", "base64", "hex", "digest", "mongo\_id", "hex\_color", "mac", "e164", "semver", "jwt"
+ * checksums: "luhn", "credit\_card", "iban"
+
+A schema with wrong arguments of these rules throws an exception when the validator is built. Arguments after the ones a rule takes are ignored, and a number and a string are interchangeable in them (`{"max_decimals": "2"}`, `{"split": 1}`). `{"rule": null}` is one `null` argument, which none of these rules takes, so `{"boolean": null}` and `{"uuid": null}` throw, like `null` as a value in the arguments (`{"not_one_of": ["a", null]}`). `{"iso_date": null}` is the plain "iso\_date", as in LIVR 2.0. The other LIVR 2.0 rules and the registered rules get `null` as one argument, as before (`{"default": null}`).
+
+Changes of LIVR 2.0 rules in LIVR 2.5:
+
+ * "iso\_date": the first argument, if any, must be an options object or `null` (`{"iso_date": "today"}` throws), a number or a boolean gives "WRONG\_DATE" instead of "FORMAT\_ERROR";
+ * "eq" and "one\_of" compare booleans as strings: `{"eq": true}` accepts `true` and `"true"`, `{"eq": "false"}` accepts `false`. They still accept what they accepted in LIVR 2.0, where `true` is `"1"`: `{"eq": true}` accepts `"1"` and `1`, `{"one_of": ["1"]}` accepts `true`;
+ * "equal\_to\_field" in aliases and "or" compares with a sibling of the field, in an item of "list\_of" the other field is missing;
+ * meta rules ignore extra arguments instead of losing the custom rules of the validator.
+
+PHP decodes `{}` and `[]` to the same empty array, so "values", "keys", "list\_length" and "unique" can't tell an empty object from an empty list, and an object with the keys "0", "1"... is a list.
+
 # INSTALL
 
 Use Composer for installation LIVR. Create composer.json file with following content:
@@ -90,6 +115,33 @@ $livr - validations rules. Rules description is available here - https://github.
 
 $isAutoTrim - asks validator to trim all values before validation. Output will be also trimmed.
 if isAutoTrim is undefined(or null) than defaultAutoTrim value will be used.
+
+## new Validator\LIVR($livr, [ 'autoTrim' => $isAutoTrim ]);
+The second argument can be an array of options. "autoTrim" is the same as $isAutoTrim above, but `[ 'autoTrim' => false ]` turns auto trim off even when defaultAutoTrim is on.
+
+## The current date
+The bounds "today", "yesterday" and "tomorrow" of "iso\_date" and "iso\_datetime" are the current date in UTC, never in the local time zone. The rules read it with `time()` in the namespace `Validator\LIVR\Rules`, so tests can fix the clock with [php-mock](https://github.com/php-mock/php-mock-phpunit) (a dev dependency only):
+
+```php
+    use phpmock\phpunit\PHPMock;
+
+    class BirthDateTest extends PHPUnit\Framework\TestCase
+    {
+        use PHPMock;
+
+        public function testBirthDateIsInThePast()
+        {
+            $time = $this->getFunctionMock('Validator\LIVR\Rules', 'time');
+            $time->expects($this->any())->willReturn(strtotime('2026-10-18T12:00:00Z'));
+
+            $validator = new Validator\LIVR([ 'birth_date' => [ 'iso_date' => [ 'max' => 'today' ] ] ]);
+            $this->assertFalse($validator->validate([ 'birth_date' => '2026-10-19' ]));
+        }
+    }
+
+    // The mock function must be defined before the rules call time() for the first time
+    BirthDateTest::defineFunctionMock('Validator\LIVR\Rules', 'time');
+```
 
 ## Validator\LIVR::registerDefaultRules([ "rule\_name" => ruleBuilder ])
 ruleBuilder - is a function reference which will be called for building single rule validator.
@@ -213,7 +265,8 @@ Use it in meta rules that validate many values with the same rules: it skips the
             $output = [];
             foreach ($values as $value) {
                 $itemOutput = null;
-                $errorCode = $validateItem($value, [ 'item' => $value ], $itemOutput);
+                // Items have no containing object: a reference to another field is a missing value
+                $errorCode = $validateItem($value, [], $itemOutput);
                 if ($errorCode) {
                     return $errorCode;
                 }
