@@ -127,4 +127,40 @@ class RulesEdgeCasesTest extends TestCase
             'Should not match $ before a trailing newline'
         );
     }
+
+    public function testUrlPortAndHost()
+    {
+        $validator = new Validator\LIVR(array('url' => 'url'));
+
+        $valid = array(
+            'https://example.com:8',
+            'https://example.com:00080/path',
+            'https://example.com:65535?q=1',
+            'https://user:pass@example.com:8080#top',
+            'https://user@example.com:80/',
+            'http://[::1]:8080/',
+            'https://example.com/file.',
+        );
+
+        foreach ($valid as $url) {
+            $this->assertEquals(array('url' => $url), $validator->validate(array('url' => $url)), "Should accept $url");
+        }
+
+        $invalid = array(
+            'https://example.com.',
+            'https://example.com.:8080',
+            'https://user@example.com./path',
+            'https://example.com:',
+            'https://example.com:/path',
+            'https://example.com:8a',
+            'https://example.com:+80',
+            'https://example.com:8./path',
+            'https://example.com:65536',
+        );
+
+        foreach ($invalid as $url) {
+            $this->assertFalse($validator->validate(array('url' => $url)), "Should reject $url");
+            $this->assertEquals(array('url' => 'WRONG_URL'), $validator->getErrors(), "Should reject $url");
+        }
+    }
 }
