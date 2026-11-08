@@ -67,6 +67,16 @@ class Special
                 return 'WRONG_URL';
             }
 
+            // LIVR 2.5: the host does not end with "." and only a port of 1-5 digits, "/", "?" or "#"
+            // may follow it. FILTER_VALIDATE_URL accepts "https://example.com." and
+            // "https://example.com:8a" (port 8), it checks that labels have at most 63 characters
+            // and ports are 0-65535 itself. User info ends at the last "@", as in parse_url()
+            $afterHost = '~^[^/?#]*//(?>[^/?#]*@)?(?:\[[^\]]*\]|[^:/?#]*(?<!\.))(?::[0-9]{1,5})?(?:[/?#]|\z)~';
+
+            if (!preg_match($afterHost, $value)) {
+                return 'WRONG_URL';
+            }
+
             return;
         };
     }

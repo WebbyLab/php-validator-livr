@@ -93,6 +93,7 @@ Changes of LIVR 2.0 rules in LIVR 2.5:
  * "iso\_date": the first argument, if any, must be an options object or `null` (`{"iso_date": "today"}` throws), a number or a boolean gives "WRONG\_DATE" instead of "FORMAT\_ERROR";
  * "eq" and "one\_of" compare booleans as strings: `{"eq": true}` accepts `true` and `"true"`, `{"eq": "false"}` accepts `false`. They still accept what they accepted in LIVR 2.0, where `true` is `"1"`: `{"eq": true}` accepts `"1"` and `1`, `{"one_of": ["1"]}` accepts `true`;
  * "equal\_to\_field" in aliases and "or" compares with a sibling of the field, in an item of "list\_of" the other field is missing;
+ * "url": only a port of 1-5 digits, a path, a query or a fragment may follow the host, so a dot after the host or a port with other characters gives "WRONG\_URL" (`https://www.google.`, `https://example.com./path`, `https://example.com:8a`). Host labels longer than 63 characters and ports above 65535 were already rejected;
  * meta rules ignore extra arguments instead of losing the custom rules of the validator.
 
 PHP decodes `{}` and `[]` to the same empty array, so "values", "keys", "list\_length" and "unique" can't tell an empty object from an empty list, and an object with the keys "0", "1"... is a list.
