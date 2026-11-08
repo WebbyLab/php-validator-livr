@@ -48,7 +48,7 @@ class LIVRTestSuite extends TestCase
             $entries = array();
 
             while (false !== ( $entry = readdir($handle) )) {
-                if ($entry != "." && $entry != "..") {
+                if ($entry != "." && $entry != ".." && is_dir("$dir/$entry")) {
                     $entries[] = $entry;
                 }
             }
@@ -80,7 +80,7 @@ class LIVRTestSuite extends TestCase
             $entries = array();
 
             while (false !== ( $entry = readdir($handle) )) {
-                if ($entry != "." && $entry != "..") {
+                if ($entry != "." && $entry != ".." && is_dir("$dir/$entry")) {
                     $entries[] = $entry;
                 }
             }
